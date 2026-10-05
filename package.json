@@ -1,9 +1,9 @@
 {
-  "name": "trm-live-template",
+  "name": "trm-live-ui",
   "version": "1.0.0",
   "private": true,
   "license": "MIT",
-  "description": "图灵镜直播模板",
+  "description": "TRM-Live-UI",
   "scripts": {
     "start": "node server.js"
   }

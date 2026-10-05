@@ -1,2 +1,9 @@
 node_modules/
 *.log
+
+# 个人内容和预设，只留在本机
+config/content.json
+config/presets/
+
+# 内部文档
+internal/

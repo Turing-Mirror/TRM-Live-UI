@@ -1,4 +1,4 @@
-// 图灵镜直播模板的本地服务：提供直播画面、控制面板，并把改动实时推送给画面
+// TRM-Live-UI 的本地服务：提供直播画面、控制面板，并把改动实时推送给画面
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
@@ -23,6 +23,11 @@ const MIME = {
   '.svg': 'image/svg+xml',
 };
 const MAX_BODY = 1024 * 1024;
+
+const DEFAULT_CONTENT = path.join(ROOT, 'config', 'content.default.json');
+
+// 个人内容不进仓库；第一次启动时用默认内容生成
+if (!fs.existsSync(FILES.content)) fs.copyFileSync(DEFAULT_CONTENT, FILES.content);
 
 const readJson = (file) => JSON.parse(fs.readFileSync(file, 'utf8'));
 const readState = () => ({ settings: readJson(FILES.settings), content: readJson(FILES.content) });
@@ -166,7 +171,7 @@ setInterval(() => {
 
 const { host, port } = readJson(FILES.settings).server;
 server.listen(port, host, () => {
-  console.log('图灵镜直播模板已启动');
+  console.log('TRM-Live-UI 已启动');
   console.log(`  直播画面（放进 OBS）：http://${host}:${port}/overlay`);
   console.log(`  控制面板：           http://${host}:${port}/panel`);
 });

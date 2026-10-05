@@ -1,21 +1,21 @@
 {
   "scene": "live",
   "title": {
-    "badge": "Kara251",
+    "badge": "LIVE",
     "main": "图灵镜",
-    "sub": "审美提升中 / Vibe Coding / 视觉设计"
+    "sub": "第 1 期"
   },
   "status": {
-    "text": "Relaxing"
+    "text": "直播中"
   },
   "notice": {
     "heading": "公告",
-    "body": "可连麦 可提问 可闲聊\n可以问的模型：\nClaude Opus 5.5\nGPT 5.6 Sol\nGemini 3.8 Flash"
+    "body": ""
   },
   "ticker": {
     "label": "提示",
-    "text": "11:45:14PM播Minecraft生存+闲聊杂谈",
-    "scroll": false
+    "text": "欢迎来到图灵镜的直播间",
+    "scroll": true
   },
   "starting": {
     "kicker": "STARTING SOON",
