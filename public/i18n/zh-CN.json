@@ -13,8 +13,19 @@
     "fallback": "UI 包“{wanted}”无法使用，已改用“{used}”。",
     "migrated": "已把旧数据搬到 {file}"
   },
-  "language": {
-    "label": "语言"
+  "nav": {
+    "label": "导航",
+    "collapse": "收起侧栏",
+    "expand": "展开侧栏",
+    "live": "直播",
+    "content": "内容",
+    "presets": "预设",
+    "library": "界面库",
+    "settings": "设置"
+  },
+  "dialog": {
+    "ok": "确定",
+    "cancel": "取消"
   },
   "connection": {
     "online": "已连接",
@@ -26,14 +37,25 @@
     "pending": "有改动，尚未更新",
     "done": "已更新 {time}"
   },
-  "banner": {
-    "noPack": "没有可以使用的 UI 包，请检查 packs 文件夹。",
-    "fallback": "UI 包“{id}”无法使用，已改用默认界面。"
-  },
   "scenes": {
     "title": "状态",
-    "hint": "点一下立即生效。",
     "switched": "已切换到“{name}”"
+  },
+  "live": {
+    "sub": "正在使用：{name}",
+    "scenes": "状态",
+    "scenesNote": "点一下立即生效，也可以按 Alt + 数字键",
+    "preview": "实时预览"
+  },
+  "content": {
+    "sub": "改完后点“更新到直播”，或按 Ctrl + Enter。",
+    "regions": "直播画面",
+    "screens": "等待画面",
+    "pending": "未更新",
+    "discard": "撤销改动",
+    "discardTitle": "撤销所有未更新的改动？",
+    "discardBody": "文字会回到直播画面上现在的样子。",
+    "none": "当前 UI 包没有可以修改的文字。"
   },
   "presets": {
     "title": "预设",
@@ -43,40 +65,67 @@
     "load": "载入",
     "remove": "删除",
     "saved": "已保存预设“{name}”",
-    "loaded": "已载入“{name}”，点击更新到直播后生效",
+    "loaded": "已载入“{name}”，确认无误后点“更新到直播”",
     "removed": "已删除预设“{name}”",
     "confirmRemove": "删除预设“{name}”？",
-    "needName": "请先填写预设名称"
+    "needName": "请先填写预设名称",
+    "sub": "把内容页现在的文字存起来，以后一键载入。",
+    "saveTitle": "保存当前内容",
+    "name": "名称",
+    "saveNote": "保存的是内容页里现在的文字，不包含当前状态。",
+    "listTitle": "已保存",
+    "emptyDesc": "在上面填一个名称，就能把现在的文字存成预设。",
+    "replaceTitle": "覆盖预设“{name}”？",
+    "replaceBody": "已有同名的预设，保存后会替换它。",
+    "replace": "覆盖"
   },
   "packs": {
-    "title": "界面库",
     "madeWith": "在 TRM Live UI v{version} 制作",
     "active": "使用中",
     "use": "使用",
-    "confirmUse": "改用“{name}”？直播画面会马上换成这套界面。",
-    "confirmDiscard": "有改动尚未更新，切换界面会丢掉这些改动。继续吗？",
+    "confirmUse": "改用“{name}”？",
+    "confirmDiscard": "内容页有未更新的改动，切换后会丢掉。",
     "import": "导入",
     "export": "导出",
     "remove": "删除",
     "sourceBuiltin": "自带",
     "sourceImported": "已导入",
-    "importRejected": "“{name}”无法导入：",
-    "confirmImport": "导入“{name}”（v{version}，在 TRM Live UI v{madeWith} 制作）？",
+    "importRejected": "“{name}”无法导入",
+    "confirmImport": "导入“{name}”？",
     "scriptWarning": "这个包带有 {count} 个脚本，会在直播画面和控制面板里运行。请只导入你信任的来源。",
     "replaceWarning": "已有同名的 UI 包，导入后会替换它，旧的会备份到 data/backups。",
     "importDone": "已导入“{name}”",
-    "confirmRemove": "删除 UI 包“{name}”？它会被移到 data/backups，内容和预设保留。",
-    "removed": "已删除“{name}”"
+    "confirmRemove": "删除 UI 包“{name}”？",
+    "removed": "已删除“{name}”",
+    "sub": "每个 UI 包是一套完整的直播界面，可以切换、导入和导出。",
+    "listTitle": "全部 UI 包",
+    "listNote": "使用中的排在最前",
+    "empty": "还没有 UI 包",
+    "confirmUseBody": "直播画面会马上换成这套界面。",
+    "importBody": "版本 v{version}，在 TRM Live UI v{madeWith} 制作。",
+    "removeBody": "它会被移到 data/backups，内容和预设保留。"
   },
-  "preview": {
-    "title": "实时预览"
+  "banner": {
+    "fallback": "UI 包“{id}”无法使用，可以在界面库里查看原因。",
+    "fallbackTitle": "已改用默认界面",
+    "issuesTitle": "当前 UI 包有提醒"
   },
-  "sections": {
-    "regions": "直播画面",
-    "screens": "等待画面"
-  },
-  "form": {
-    "noFields": "这一项没有可以修改的内容。"
+  "settings": {
+    "sub": "界面语言、OBS 要用的地址和版本信息。",
+    "general": "常规",
+    "language": "界面语言",
+    "obs": "OBS",
+    "obsNote": "把这两个地址填进 OBS",
+    "overlayUrl": "直播画面（浏览器来源）",
+    "panelUrl": "控制面板（自定义浏览器停靠窗口）",
+    "copy": "复制",
+    "copied": "已复制",
+    "copyFailed": "复制失败，请手动选取",
+    "about": "关于",
+    "engine": "程序版本",
+    "packFormat": "UI 包格式",
+    "dataFormat": "数据格式",
+    "componentApi": "组件接口"
   },
   "kind": {
     "title": {

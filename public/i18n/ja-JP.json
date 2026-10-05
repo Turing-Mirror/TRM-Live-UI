@@ -13,8 +13,19 @@
     "fallback": "UI パック「{wanted}」は使えないため、「{used}」を使います。",
     "migrated": "古いデータを {file} に移しました"
   },
-  "language": {
-    "label": "言語"
+  "nav": {
+    "label": "ナビゲーション",
+    "collapse": "サイドバーを閉じる",
+    "expand": "サイドバーを開く",
+    "live": "配信",
+    "content": "内容",
+    "presets": "プリセット",
+    "library": "UI ライブラリ",
+    "settings": "設定"
+  },
+  "dialog": {
+    "ok": "OK",
+    "cancel": "キャンセル"
   },
   "connection": {
     "online": "接続中",
@@ -26,14 +37,25 @@
     "pending": "未反映の変更があります",
     "done": "{time} に反映しました"
   },
-  "banner": {
-    "noPack": "使える UI パックがありません。packs フォルダを確認してください。",
-    "fallback": "UI パック「{id}」は使えないため、既定のパックを使っています。"
-  },
   "scenes": {
     "title": "シーン",
-    "hint": "押すとすぐに反映されます。",
     "switched": "「{name}」に切り替えました"
+  },
+  "live": {
+    "sub": "使用中：{name}",
+    "scenes": "シーン",
+    "scenesNote": "押すとすぐに反映されます。Alt + 数字キーでも切り替えられます",
+    "preview": "ライブプレビュー"
+  },
+  "content": {
+    "sub": "編集が終わったら「配信に反映」を押すか、Ctrl + Enter を押します。",
+    "regions": "配信画面",
+    "screens": "待機画面",
+    "pending": "未反映",
+    "discard": "変更を取り消す",
+    "discardTitle": "未反映の変更をすべて取り消しますか？",
+    "discardBody": "文字は配信画面に今表示されている状態に戻ります。",
+    "none": "現在の UI パックには編集できる文字がありません。"
   },
   "presets": {
     "title": "プリセット",
@@ -43,40 +65,67 @@
     "load": "読み込み",
     "remove": "削除",
     "saved": "プリセット「{name}」を保存しました",
-    "loaded": "「{name}」を読み込みました。「配信に反映」を押すと表示されます",
+    "loaded": "「{name}」を読み込みました。確認してから「配信に反映」を押してください",
     "removed": "プリセット「{name}」を削除しました",
     "confirmRemove": "プリセット「{name}」を削除しますか？",
-    "needName": "先にプリセット名を入力してください"
+    "needName": "先にプリセット名を入力してください",
+    "sub": "内容ページの今の文字を保存し、あとでワンクリックで読み込めます。",
+    "saveTitle": "現在の内容を保存",
+    "name": "名前",
+    "saveNote": "内容ページの今の文字を保存します。現在のシーンは含まれません。",
+    "listTitle": "保存済み",
+    "emptyDesc": "上で名前を入力すると、今の文字をプリセットとして保存できます。",
+    "replaceTitle": "プリセット「{name}」を上書きしますか？",
+    "replaceBody": "同じ名前のプリセットがあります。保存すると置き換わります。",
+    "replace": "上書き"
   },
   "packs": {
-    "title": "UI ライブラリ",
     "madeWith": "TRM Live UI v{version} で作成",
     "active": "使用中",
     "use": "使う",
-    "confirmUse": "「{name}」に切り替えますか？配信画面がすぐにこの UI に変わります。",
-    "confirmDiscard": "未反映の変更があります。UI を切り替えると変更は失われます。続けますか？",
+    "confirmUse": "「{name}」に切り替えますか？",
+    "confirmDiscard": "内容ページに未反映の変更があります。切り替えると失われます。",
     "import": "読み込み",
     "export": "書き出し",
     "remove": "削除",
     "sourceBuiltin": "内蔵",
     "sourceImported": "追加済み",
-    "importRejected": "「{name}」は読み込めません：",
-    "confirmImport": "「{name}」（v{version}、TRM Live UI v{madeWith} で作成）を読み込みますか？",
+    "importRejected": "「{name}」は読み込めません",
+    "confirmImport": "「{name}」を読み込みますか？",
     "scriptWarning": "このパックには {count} 個のスクリプトが含まれ、配信画面とコントロールパネルで実行されます。信頼できる提供元のパックだけを読み込んでください。",
     "replaceWarning": "同じ id の UI パックがあります。読み込むと置き換わり、古いものは data/backups にバックアップされます。",
     "importDone": "「{name}」を読み込みました",
-    "confirmRemove": "UI パック「{name}」を削除しますか？data/backups に移されます。内容とプリセットは残ります。",
-    "removed": "「{name}」を削除しました"
+    "confirmRemove": "UI パック「{name}」を削除しますか？",
+    "removed": "「{name}」を削除しました",
+    "sub": "UI パックは配信画面一式です。ここで切り替え、読み込み、書き出しができます。",
+    "listTitle": "すべての UI パック",
+    "listNote": "使用中のパックが先頭に表示されます",
+    "empty": "UI パックはまだありません",
+    "confirmUseBody": "配信画面がすぐにこの UI に変わります。",
+    "importBody": "バージョン v{version}、TRM Live UI v{madeWith} で作成。",
+    "removeBody": "data/backups に移されます。内容とプリセットは残ります。"
   },
-  "preview": {
-    "title": "ライブプレビュー"
+  "banner": {
+    "fallback": "UI パック「{id}」は使えません。理由は UI ライブラリで確認できます。",
+    "fallbackTitle": "既定の UI を使っています",
+    "issuesTitle": "現在の UI パックにお知らせがあります"
   },
-  "sections": {
-    "regions": "配信画面",
-    "screens": "待機画面"
-  },
-  "form": {
-    "noFields": "ここで編集できる項目はありません。"
+  "settings": {
+    "sub": "表示言語、OBS で使うアドレス、バージョン情報。",
+    "general": "一般",
+    "language": "表示言語",
+    "obs": "OBS",
+    "obsNote": "この 2 つのアドレスを OBS に入力します",
+    "overlayUrl": "配信画面（ブラウザソース）",
+    "panelUrl": "コントロールパネル（カスタムブラウザドック）",
+    "copy": "コピー",
+    "copied": "コピーしました",
+    "copyFailed": "コピーできませんでした。手動で選択してください",
+    "about": "このプログラムについて",
+    "engine": "プログラムのバージョン",
+    "packFormat": "UI パック形式",
+    "dataFormat": "データ形式",
+    "componentApi": "コンポーネント API"
   },
   "kind": {
     "title": {

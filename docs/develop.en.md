@@ -272,7 +272,7 @@ The structure of the full state:
 ## Conventions
 
 - All panel text lives in the language files in `public/i18n/`. Code reads it with `t('key')` and never hardcodes it. Add new text in all three languages at once.
-- The panel's colors, radii and motion come from the TRM UI design tokens. Use only the variables and never color literals.
+- The panel follows TRM UI. The sidebar shell, page heads, blocks, groups and controls in `public/panel/ui.js` and `public/panel/panel.css` are framework-free versions of the TRM UI components of the same names. Build new panel UI from these components and the design tokens. Do not add new styles or color literals. When unsure, open TRM UI and match it.
 - The overlay's look belongs in the UI pack. `public/overlay/overlay.css` holds only the skeleton.
 - The server uses no third-party dependencies.
 - Comments explain why, not what the code already says.

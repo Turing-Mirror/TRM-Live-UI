@@ -1,12 +1,28 @@
-// 控制面板
+// 控制面板：TRM UI 式的侧栏外壳，五个页面（直播、内容、预设、界面库、设置）
 //
-// 数据流：服务端通过 /events 推送完整状态 → 面板据此重画。
+// 数据流：服务端通过 /events 推送完整状态 → 这里更新 store → 当前页面 update(ctx)。
 // 文字改动先放在草稿里，点“更新到直播”才发给服务端；状态切换点一下立即生效。
 import { api, subscribe } from '../core/api.js';
-import { h } from '../core/dom.js';
-import { setLanguage, currentLanguage, t, localize, describe, translatePage } from '../core/i18n.js';
+import { setLanguage, currentLanguage, t, localize, describe } from '../core/i18n.js';
 import { preparePack } from '../core/pack.js';
-import { renderCards, markDirty } from './form.js';
+import { el, iconBtn, notify, dialog } from './ui.js';
+import { icon } from './icons.js';
+import { livePage } from './pages/live.js';
+import { contentPage } from './pages/content.js';
+import { presetsPage } from './pages/presets.js';
+import { libraryPage } from './pages/library.js';
+import { settingsPage } from './pages/settings.js';
+
+/** 导航顺序就是换页动画的方向依据：靠后的页在下面。 */
+const NAV = [
+  { id: 'live', icon: 'play', create: livePage },
+  { id: 'content', icon: 'edit', create: contentPage },
+  { id: 'presets', icon: 'layers', create: presetsPage },
+  { id: 'library', icon: 'grid', create: libraryPage },
+  { id: 'settings', icon: 'settings', create: settingsPage, foot: true },
+];
+const NARROW = 900;
+const LEAVE_MS = 180;
 
 const $ = (id) => document.getElementById(id);
 
@@ -16,154 +32,316 @@ const store = {
   loadIssues: [],
   packKey: null,
   draft: { regions: {}, screens: {} },
+  formVersion: 0,
   presets: [],
   packs: [],
   locales: [],
-  flash: null,
   online: false,
+  page: NAV.some((item) => item.id === location.hash.slice(1)) ? location.hash.slice(1) : 'live',
+  view: { contentTab: 'regions', presetName: '' },
+  sidebarOpen: readPref('sidebarOpen', true),
 };
+
+// 侧栏展开与否只是这个浏览器里的偏好，存不下也不影响使用
+function readPref(key, fallback) {
+  try {
+    const value = localStorage.getItem(`trm-live:${key}`);
+    return value === null ? fallback : JSON.parse(value);
+  } catch {
+    return fallback;
+  }
+}
+function writePref(key, value) {
+  try {
+    localStorage.setItem(`trm-live:${key}`, JSON.stringify(value));
+  } catch {
+    // 忽略：隐私模式等情况下存不了
+  }
+}
 
 const clone = (value) => JSON.parse(JSON.stringify(value));
 const published = () => ({ regions: store.state.content.regions, screens: store.state.content.screens });
-const isDirty = () => JSON.stringify(store.draft) !== JSON.stringify(published());
+const isDirty = () => Boolean(store.state?.content) && JSON.stringify(store.draft) !== JSON.stringify(published());
+const isItemDirty = (group, id) => JSON.stringify(store.draft[group][id] ?? {}) !== JSON.stringify(published()[group][id] ?? {});
 
-// 顶栏右侧的一句提示：改动、更新、失败等
-function flash(message, tone = 'info') {
-  store.flash = { message, tone };
-  renderSaveState();
+function resetDraft(content) {
+  store.draft = clone(content);
+  store.formVersion += 1;
 }
 
-function renderSaveState() {
-  const el = $('save-state');
-  const dirty = store.state?.content && isDirty();
-  const message = store.flash?.message ?? (dirty ? t('publish.pending') : '');
-  el.textContent = message;
-  el.dataset.tone = store.flash?.tone ?? (dirty ? 'pending' : 'info');
-  $('publish').disabled = !dirty;
+const report = (err) => notify(describe(err), 'error');
+
+// ---- 动作：页面通过 ctx.actions 调用 ----
+
+const actions = {
+  go: (page) => showPage(page),
+
+  async switchScene(id) {
+    const scene = store.state.pack.manifest.scenes.items.find((item) => item.id === id);
+    if (!scene || id === store.state.content.scene) return;
+    try {
+      await api.setScene(id);
+      notify(t('scenes.switched', { name: localize(scene.label) || id }));
+    } catch (err) {
+      report(err);
+    }
+  },
+
+  edited() {
+    refresh();
+  },
+
+  async publish() {
+    if (!isDirty()) return;
+    try {
+      await api.saveContent(store.draft);
+      notify(t('publish.done', { time: new Date().toLocaleTimeString(currentLanguage(), { hour12: false }) }), 'ok');
+    } catch (err) {
+      report(err);
+    }
+  },
+
+  async discard() {
+    if (!isDirty()) return;
+    if (!await dialog({ title: t('content.discardTitle'), body: t('content.discardBody'), confirm: t('content.discard'), danger: true })) return;
+    resetDraft(published());
+    refresh();
+  },
+
+  async savePreset(name) {
+    const clean = String(name ?? '').trim();
+    if (!clean) return notify(t('presets.needName'), 'warn');
+    if (store.presets.includes(clean) && !await dialog({ title: t('presets.replaceTitle', { name: clean }), body: t('presets.replaceBody'), confirm: t('presets.replace') })) return;
+    try {
+      store.presets = await api.presets.save(clean, store.draft);
+      store.view.presetName = '';
+      notify(t('presets.saved', { name: clean }), 'ok');
+      rebuildPage();
+    } catch (err) {
+      report(err);
+    }
+  },
+
+  async applyPreset(name) {
+    try {
+      const preset = await api.presets.load(name);
+      // 预设里没有的条目保留现有内容
+      const draft = clone(store.draft);
+      for (const group of ['regions', 'screens']) {
+        for (const [id, fields] of Object.entries(preset[group] ?? {})) draft[group][id] = { ...draft[group][id], ...fields };
+      }
+      resetDraft(draft);
+      notify(t('presets.loaded', { name }), 'ok');
+      showPage('content');
+      refresh();
+    } catch (err) {
+      report(err);
+    }
+  },
+
+  async removePreset(name) {
+    if (!await dialog({ title: t('presets.confirmRemove', { name }), confirm: t('presets.remove'), danger: true })) return;
+    try {
+      store.presets = await api.presets.remove(name);
+      notify(t('presets.removed', { name }));
+      refresh();
+    } catch (err) {
+      report(err);
+    }
+  },
+
+  async usePack(pack) {
+    const name = localize(pack.name) || pack.id;
+    const body = [t('packs.confirmUseBody')];
+    if (isDirty()) body.push(t('packs.confirmDiscard'));
+    if (!await dialog({ title: t('packs.confirmUse', { name }), body, confirm: t('packs.use') })) return;
+    try {
+      await api.setConfig({ activePack: pack.id });
+    } catch (err) {
+      report(err);
+    }
+  },
+
+  /** 导入：先让服务端检查并说明这个包（含不含脚本、会不会覆盖），确认后才安装。 */
+  async importPack(file) {
+    try {
+      const info = await api.pack.inspect(file);
+      const name = localize(info.name) || info.id || file.name;
+      const errors = info.issues.filter((issue) => issue.level === 'error');
+      if (errors.length) {
+        await dialog({ title: t('packs.importRejected', { name }), body: errors.map(describe), cancel: null });
+        return;
+      }
+      if (info.exists === 'builtin') {
+        await dialog({ title: t('packs.importRejected', { name }), body: describe({ code: 'pack.builtinConflict', params: { id: info.id } }), cancel: null });
+        return;
+      }
+      const body = [t('packs.importBody', { version: info.version, madeWith: info.madeWith })];
+      if (info.components) body.push(t('packs.scriptWarning', { count: info.components }));
+      if (info.exists === 'user') body.push(t('packs.replaceWarning'));
+      if (!await dialog({ title: t('packs.confirmImport', { name }), body, confirm: t('packs.import') })) return;
+      await api.pack.install(file, info.exists === 'user');
+      notify(t('packs.importDone', { name }), 'ok');
+      await loadPacks();
+    } catch (err) {
+      report(err);
+    }
+  },
+
+  async removePack(pack) {
+    const name = localize(pack.name) || pack.id;
+    if (!await dialog({ title: t('packs.confirmRemove', { name }), body: t('packs.removeBody'), confirm: t('packs.remove'), danger: true })) return;
+    try {
+      store.packs = await api.pack.remove(pack.id);
+      notify(t('packs.removed', { name }));
+      refresh();
+    } catch (err) {
+      report(err);
+    }
+  },
+
+  async setLanguage(id) {
+    try {
+      await api.setConfig({ language: id });
+    } catch (err) {
+      report(err);
+    }
+  },
+};
+
+function context() {
+  return {
+    state: store.state,
+    registry: store.registry,
+    loadIssues: store.loadIssues,
+    draft: store.draft,
+    formVersion: store.formVersion,
+    presets: store.presets,
+    packs: store.packs,
+    locales: store.locales,
+    view: store.view,
+    page: store.page,
+    isDirty,
+    isItemDirty,
+    actions,
+  };
 }
 
-function renderConnection() {
-  const el = $('connection');
-  el.textContent = store.online ? t('connection.online') : t('connection.offline');
-  el.dataset.online = String(store.online);
+// ---- 外壳：侧栏 ----
+
+function sideItem({ iconNode, label, on, dot, key, onClick, title, scene = false }) {
+  const cls = ['side-item', scene ? 'is-scene' : '', on ? 'is-on' : ''].filter(Boolean).join(' ');
+  const current = on ? (scene ? 'true' : 'page') : null;
+  return el('button', { type: 'button', class: cls, 'aria-current': current, title, onclick: onClick },
+    iconNode,
+    el('span', { class: 'side-label' }, label),
+    key ? el('kbd', { class: 'side-key' }, key) : null,
+    dot ? el('span', { class: 'side-dot', 'aria-label': dot }) : null);
 }
 
-function report(err) {
-  flash(describe(err), 'error');
-}
-
-// ---- 横幅：包不能用、改用了默认包、组件载入失败等 ----
-
-function renderBanners() {
-  const { state } = store;
-  const items = [];
-  if (!state.pack) items.push({ tone: 'error', text: t('banner.noPack') });
-  if (state.fallbackFrom) items.push({ tone: 'warn', text: t('banner.fallback', { id: state.fallbackFrom }) });
-  for (const issue of [...(state.pack?.issues ?? []), ...store.loadIssues]) {
-    items.push({ tone: issue.level === 'error' ? 'error' : 'warn', text: describe(issue) });
+function renderSidebar() {
+  const navItem = (item) => sideItem({
+    iconNode: icon(item.icon),
+    label: t(`nav.${item.id}`),
+    title: collapsed() ? t(`nav.${item.id}`) : null,
+    on: store.page === item.id,
+    dot: item.id === 'content' && isDirty() ? t('publish.pending') : null,
+    onClick: () => showPage(item.id),
+  });
+  const main = NAV.filter((item) => !item.foot).map(navItem);
+  const scenes = store.state?.pack?.manifest.scenes.items ?? [];
+  if (scenes.length > 1) {
+    main.push(el('div', { class: 'side-head' }, t('scenes.title')));
+    scenes.forEach((scene, i) => {
+      const label = localize(scene.label) || scene.id;
+      main.push(sideItem({
+        iconNode: el('span', { class: 'scene-mark', 'aria-hidden': 'true' }),
+        label,
+        title: collapsed() ? label : null,
+        key: i < 9 ? `Alt+${i + 1}` : null,
+        scene: true,
+        on: scene.id === store.state.content.scene,
+        onClick: () => actions.switchScene(scene.id),
+      }));
+    });
   }
-  $('banners').replaceChildren(...items.map((item) => h('div', `banner banner-${item.tone}`, item.text)));
+  $('sidebar-main').replaceChildren(...main);
+  $('sidebar-foot').replaceChildren(...NAV.filter((item) => item.foot).map(navItem));
+  $('sidebar').setAttribute('aria-label', t('nav.label'));
 }
 
-// ---- 状态 ----
+const collapsed = () => innerWidth < NARROW || !store.sidebarOpen;
 
-function renderScenes() {
-  const { manifest } = store.state.pack;
-  const current = store.state.content.scene;
-  $('scenes').replaceChildren(...manifest.scenes.items.map((scene, i) => {
-    const button = h('button', 'scene');
-    button.type = 'button';
-    button.setAttribute('aria-pressed', String(scene.id === current));
-    button.append(h('span', 'scene-name', localize(scene.label) || scene.id));
-    if (i < 9) button.append(h('kbd', 'scene-key', `Alt+${i + 1}`));
-    button.addEventListener('click', () => switchScene(scene));
-    return button;
+function renderShell() {
+  $('shell').classList.toggle('is-collapsed', collapsed());
+  $('sidebar-toggle').replaceChildren(iconBtn({
+    name: 'sidebar',
+    label: t(collapsed() ? 'nav.expand' : 'nav.collapse'),
+    onClick: () => {
+      store.sidebarOpen = collapsed();
+      writePref('sidebarOpen', store.sidebarOpen);
+      renderShell();
+      renderSidebar();
+    },
   }));
+  const status = $('connection');
+  status.textContent = t(store.online ? 'connection.online' : 'connection.offline');
+  status.dataset.online = String(store.online);
 }
 
-async function switchScene(scene) {
-  try {
-    await api.setScene(scene.id);
-    flash(t('scenes.switched', { name: localize(scene.label) || scene.id }));
-  } catch (err) {
-    report(err);
+// ---- 页面：侧栏式换页，往下走新页从下方浮上来，往上走从上方落下来 ----
+
+let current = null;
+
+function mountPage(id, animation) {
+  const def = NAV.find((item) => item.id === id);
+  const page = def.create(context());
+  const node = el('div', { class: `page${animation ? ` ${animation}` : ''}`, 'data-page': id }, page.el);
+  $('main').append(node);
+  return { id, node, page };
+}
+
+function showPage(id) {
+  if (!store.state?.pack && id !== 'settings') id = 'settings';
+  const from = NAV.findIndex((item) => item.id === store.page);
+  const to = NAV.findIndex((item) => item.id === id);
+  store.page = id;
+  history.replaceState(null, '', `#${id}`);
+  renderSidebar();
+  if (current?.id === id) return;
+  const down = to >= from;
+  if (current) {
+    const old = current.node;
+    old.classList.add(down ? 'page-leave-u' : 'page-leave-d');
+    setTimeout(() => old.remove(), LEAVE_MS);
   }
+  current = mountPage(id, current ? (down ? 'page-enter-u' : 'page-enter-d') : null);
 }
 
-// ---- 预设 ----
+/** 原地重建当前页（换语言、换包、预设列表变了），保留滚动位置，不放换页动画。 */
+function rebuildPage() {
+  if (!current) return showPage(store.page);
+  const scroll = current.node.scrollTop;
+  current.node.remove();
+  current = mountPage(store.page, null);
+  current.node.scrollTop = scroll;
+}
+
+function refresh() {
+  renderSidebar();
+  current?.page.update?.(context());
+}
+
+// ---- 数据 ----
 
 async function loadPresets() {
   try {
-    store.presets = await api.presets.list();
+    store.presets = store.state?.pack ? await api.presets.list() : [];
   } catch (err) {
     store.presets = [];
     report(err);
   }
-  renderPresets();
 }
-
-function renderPresets() {
-  const list = $('presets');
-  if (!store.presets.length) {
-    list.replaceChildren(h('p', 'help', t('presets.empty')));
-    return;
-  }
-  list.replaceChildren(...store.presets.map((name) => {
-    const row = h('div', 'row');
-    row.append(h('span', 'row-title', name));
-    const load = h('button', 'btn btn-small', t('presets.load'));
-    load.type = 'button';
-    load.addEventListener('click', () => applyPreset(name));
-    const remove = h('button', 'btn btn-small btn-quiet', t('presets.remove'));
-    remove.type = 'button';
-    remove.addEventListener('click', () => removePreset(name));
-    row.append(load, remove);
-    return row;
-  }));
-}
-
-async function applyPreset(name) {
-  try {
-    const preset = await api.presets.load(name);
-    // 预设里没有的条目保留现有内容
-    for (const group of ['regions', 'screens']) {
-      for (const [id, fields] of Object.entries(preset[group] ?? {})) {
-        store.draft[group][id] = { ...store.draft[group][id], ...fields };
-      }
-    }
-    $('preset-name').value = name;
-    renderForms();
-    flash(t('presets.loaded', { name }), 'pending');
-  } catch (err) {
-    report(err);
-  }
-}
-
-async function removePreset(name) {
-  if (!confirm(t('presets.confirmRemove', { name }))) return;
-  try {
-    store.presets = await api.presets.remove(name);
-    renderPresets();
-    flash(t('presets.removed', { name }));
-  } catch (err) {
-    report(err);
-  }
-}
-
-$('preset-form').addEventListener('submit', async (event) => {
-  event.preventDefault();
-  const name = $('preset-name').value.trim();
-  if (!name) return flash(t('presets.needName'), 'error');
-  try {
-    store.presets = await api.presets.save(name, store.draft);
-    renderPresets();
-    flash(t('presets.saved', { name }));
-  } catch (err) {
-    report(err);
-  }
-});
-
-// ---- 界面库 ----
 
 async function loadPacks() {
   try {
@@ -172,170 +350,8 @@ async function loadPacks() {
     store.packs = [];
     report(err);
   }
-  renderPacks();
+  refresh();
 }
-
-function renderPacks() {
-  const activeId = store.state.pack?.id;
-  // 使用中的在最前，其次是能用的
-  const rank = (pack) => (pack.id === activeId ? 0 : pack.usable ? 1 : 2);
-  const packs = [...store.packs].sort((a, b) => rank(a) - rank(b));
-  $('packs').replaceChildren(...packs.map((pack) => {
-    const row = h('div', `pack ${pack.usable ? '' : 'is-unusable'}`);
-    const info = h('div', 'pack-info');
-    info.append(h('span', 'row-title', localize(pack.name) || pack.id));
-    const meta = [pack.version && `v${pack.version}`, pack.author].filter(Boolean).join(' · ');
-    if (meta) info.append(h('span', 'meta', meta));
-    const tags = h('div', 'pack-tags');
-    tags.append(h('span', 'tag', t(pack.builtin ? 'packs.sourceBuiltin' : 'packs.sourceImported')));
-    if (pack.madeWith) tags.append(h('span', 'tag', t('packs.madeWith', { version: pack.madeWith })));
-    info.append(tags);
-    for (const issue of pack.issues) {
-      info.append(h('span', `help ${issue.level === 'error' ? 'danger' : 'warn'}`, describe(issue)));
-    }
-
-    const actions = h('div', 'pack-actions');
-    if (pack.id === activeId) {
-      actions.append(h('span', 'tag tag-accent', t('packs.active')));
-    } else if (pack.usable) {
-      actions.append(button(t('packs.use'), () => usePack(pack)));
-    }
-    const exportLink = h('a', 'btn btn-small btn-quiet', t('packs.export'));
-    exportLink.href = api.pack.exportUrl(pack.id);
-    exportLink.download = '';
-    actions.append(exportLink);
-    if (!pack.builtin) actions.append(button(t('packs.remove'), () => removePack(pack), 'btn-quiet'));
-
-    row.append(info, actions);
-    return row;
-  }));
-}
-
-function button(label, onClick, extra = '') {
-  const el = h('button', `btn btn-small ${extra}`, label);
-  el.type = 'button';
-  el.addEventListener('click', onClick);
-  return el;
-}
-
-/** 导入：先让服务端检查并说明这个包（含不含脚本、会不会覆盖），确认后才安装。 */
-async function importPackFile(file) {
-  try {
-    const info = await api.pack.inspect(file);
-    const name = localize(info.name) || info.id;
-    const errors = info.issues.filter((issue) => issue.level === 'error');
-    if (errors.length) {
-      alert([t('packs.importRejected', { name }), ...errors.map(describe)].join('\n'));
-      return;
-    }
-    if (info.exists === 'builtin') {
-      alert(describe({ code: 'pack.builtinConflict', params: { id: info.id } }));
-      return;
-    }
-    const lines = [t('packs.confirmImport', { name, version: info.version, madeWith: info.madeWith })];
-    if (info.components) lines.push(t('packs.scriptWarning', { count: info.components }));
-    if (info.exists === 'user') lines.push(t('packs.replaceWarning'));
-    if (!confirm(lines.join('\n\n'))) return;
-    await api.pack.install(file, info.exists === 'user');
-    flash(t('packs.importDone', { name }), 'ok');
-    loadPacks();
-  } catch (err) {
-    report(err);
-  }
-}
-
-$('pack-file').addEventListener('change', (event) => {
-  const [file] = event.target.files;
-  event.target.value = '';
-  if (file) importPackFile(file);
-});
-
-async function removePack(pack) {
-  const name = localize(pack.name) || pack.id;
-  if (!confirm(t('packs.confirmRemove', { name }))) return;
-  try {
-    store.packs = await api.pack.remove(pack.id);
-    renderPacks();
-    flash(t('packs.removed', { name }));
-  } catch (err) {
-    report(err);
-  }
-}
-
-async function usePack(pack) {
-  if (isDirty() && !confirm(t('packs.confirmDiscard'))) return;
-  if (!confirm(t('packs.confirmUse', { name: localize(pack.name) || pack.id }))) return;
-  try {
-    await api.setConfig({ activePack: pack.id });
-  } catch (err) {
-    report(err);
-  }
-}
-
-// ---- 内容表单 ----
-
-function cardItems(defs, labelOf) {
-  return defs.map((def) => {
-    const kind = store.registry.kinds.get(def.kind);
-    return { id: def.id, label: labelOf(def), kind, kindName: def.kind, fields: kind?.fields ?? [] };
-  });
-}
-
-function onEdit() {
-  store.flash = null;
-  markAllDirty();
-  renderSaveState();
-}
-
-function markAllDirty() {
-  const { regions, screens } = published();
-  markDirty($('regions'), store.draft.regions, regions);
-  markDirty($('screens'), store.draft.screens, screens);
-}
-
-function renderForms() {
-  const { manifest } = store.state.pack;
-  const regions = cardItems(manifest.regions.filter((r) => store.registry.kinds.get(r.kind)?.fields?.length !== 0), (r) => r.label);
-  const screens = cardItems(
-    manifest.scenes.items.filter((scene) => scene.screen).map((scene) => ({ ...scene.screen, id: scene.id, label: scene.label })),
-    (s) => s.label,
-  );
-  renderCards($('regions'), regions, store.draft.regions, onEdit);
-  renderCards($('screens'), screens, store.draft.screens, onEdit);
-  $('screens-block').hidden = !screens.length;
-  markAllDirty();
-  renderSaveState();
-}
-
-async function publish() {
-  if (!isDirty()) return;
-  try {
-    await api.saveContent(store.draft);
-    const time = new Date().toLocaleTimeString(currentLanguage(), { hour12: false });
-    flash(t('publish.done', { time }), 'ok');
-  } catch (err) {
-    report(err);
-  }
-}
-
-$('publish').addEventListener('click', publish);
-
-document.addEventListener('keydown', (event) => {
-  if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) {
-    event.preventDefault();
-    publish();
-  }
-  // Alt + 数字：切换到第几个状态
-  if (event.altKey && /^[1-9]$/.test(event.key) && store.state?.pack) {
-    const scene = store.state.pack.manifest.scenes.items[Number(event.key) - 1];
-    if (scene) {
-      event.preventDefault();
-      switchScene(scene);
-    }
-  }
-});
-
-// ---- 语言 ----
 
 async function loadLocales() {
   try {
@@ -343,48 +359,18 @@ async function loadLocales() {
   } catch {
     store.locales = [];
   }
-  renderLanguage();
-}
-
-function renderLanguage() {
-  const select = $('language');
-  select.replaceChildren(...store.locales.map((locale) => {
-    const option = h('option', '', locale.name);
-    option.value = locale.id;
-    return option;
-  }));
-  select.value = currentLanguage();
-}
-
-$('language').addEventListener('change', async (event) => {
-  try {
-    await api.setConfig({ language: event.target.value });
-  } catch (err) {
-    report(err);
-  }
-});
-
-// ---- 收到新状态 ----
-
-function renderStatic() {
-  const { state } = store;
-  translatePage();
-  $('engine-version').textContent = `v${state.engine.version}`;
-  $('pack-name').textContent = state.pack ? localize(state.pack.manifest.name) : '';
-  if (state.pack) {
-    const { width, height } = state.pack.manifest.canvas;
-    $('preview').style.aspectRatio = `${width} / ${height}`;
-  }
-  renderLanguage();
-  renderConnection();
 }
 
 async function onState(next) {
   const previous = store.state;
-  store.online = true;
   store.state = next;
+  store.online = true;
+
   const languageChanged = previous?.config.language !== next.config.language;
-  if (languageChanged) await setLanguage(next.config.language);
+  if (languageChanged) {
+    await setLanguage(next.config.language);
+    document.title = 'TRM Live UI';
+  }
 
   const packKey = next.pack ? `${next.pack.id}:${next.pack.revision}` : null;
   const packChanged = packKey !== store.packKey;
@@ -395,41 +381,63 @@ async function onState(next) {
       store.registry = registry;
       store.loadIssues = issues;
     }
-    loadPresets();
-    loadPacks();
+    await Promise.all([loadPresets(), loadPacks(), store.locales.length ? null : loadLocales()]);
   }
-
-  if (languageChanged || packChanged) renderStatic();
-  renderBanners();
-  if (!next.pack) return;
 
   // 草稿没有改动时跟随服务端；有改动时保留，避免覆盖正在编辑的内容
-  const draftIsClean = previous?.content && JSON.stringify(store.draft) === JSON.stringify({
-    regions: previous.content.regions, screens: previous.content.screens,
-  });
-  if (packChanged || draftIsClean || !previous?.content) {
-    store.draft = clone(published());
-    renderForms();
-  } else if (languageChanged) {
-    renderForms();
+  if (next.content) {
+    const wasClean = !previous?.content || JSON.stringify(store.draft) === JSON.stringify({
+      regions: previous.content.regions, screens: previous.content.screens,
+    });
+    if (packChanged || wasClean) resetDraft({ regions: next.content.regions, screens: next.content.screens });
+  }
+
+  renderShell();
+  if (!current || languageChanged || packChanged) {
+    if (current) rebuildPage();
+    else showPage(store.page);
   } else {
-    markAllDirty();
+    refresh();
   }
-  renderScenes();
-  if (languageChanged) {
-    renderPresets();
-    renderPacks();
-  }
-  renderSaveState();
 }
+
+// ---- 快捷键 ----
+
+document.addEventListener('keydown', (event) => {
+  if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) {
+    event.preventDefault();
+    actions.publish();
+  }
+  // Alt + 数字：切换到第几个状态
+  if (event.altKey && /^[1-9]$/.test(event.key) && store.state?.pack) {
+    const scene = store.state.pack.manifest.scenes.items[Number(event.key) - 1];
+    if (scene) {
+      event.preventDefault();
+      actions.switchScene(scene.id);
+    }
+  }
+});
+
+// 地址栏里的 #页面 改变时（前进后退、手动输入）跟着换页
+addEventListener('hashchange', () => {
+  const id = location.hash.slice(1);
+  if (store.state && NAV.some((item) => item.id === id) && id !== store.page) showPage(id);
+});
+
+addEventListener('resize', () => {
+  if (!store.state) return;
+  const before = $('shell').classList.contains('is-collapsed');
+  if (before !== collapsed()) {
+    renderShell();
+    renderSidebar();
+  }
+});
 
 let queue = Promise.resolve();
 subscribe(
   (state) => { queue = queue.then(() => onState(state)).catch((err) => console.error(err)); },
   (online) => {
     store.online = online;
-    if (store.state) renderConnection();
+    if (store.state) renderShell();
   },
 );
-
-loadLocales();

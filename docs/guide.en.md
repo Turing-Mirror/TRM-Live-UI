@@ -44,11 +44,19 @@ If the window capture includes a title bar or border, enter the pixels to remove
 
 ## Control panel
 
-Scenes, presets and the UI library are on the left. The live preview and the content are on the right. The top bar switches the panel language.
+The sidebar on the left has five pages: Live, Content, Presets, UI library and Settings. Below them, every scene is listed, and a click switches to it. In a narrow window, such as an OBS dock, the sidebar collapses to a column of icons.
+
+| Page | Use |
+|---|---|
+| Live | Switch scenes and watch the live preview |
+| Content | Edit the text on the overlay and the waiting screens |
+| Presets | Save, load and delete presets |
+| UI library | Switch, import, export and delete UI packs |
+| Settings | Panel language, the addresses OBS needs, and version information |
 
 ### Edit content
 
-Edit the text on the right, then click "Update" or press Ctrl + Enter. Cards with unpublished changes are marked.
+Edit the text on the Content page, then click "Update" or press Ctrl + Enter. A section with unpublished changes shows a small dot next to its title, and so does "Content" in the sidebar. Click "Discard changes" to return to what the overlay shows now.
 
 ### Scenes
 
@@ -67,8 +75,8 @@ Enter a time such as 21:00 in "Count down to" to show a countdown. Leave it empt
 
 ### Presets
 
-- **Save**: Enter a name and click "Save". This saves the current text on the right. A preset with the same name is replaced.
-- **Load**: The content fills the fields on the right. It appears on the overlay after you click "Update".
+- **Save**: Enter a name and click "Save". This saves the current text on the Content page. If a preset with the same name exists, you are asked first.
+- **Load**: The content fills the Content page. It appears on the overlay after you click "Update".
 - **Delete**: Click "Delete" next to a preset.
 
 Presets do not include the current scene. Each UI pack has its own presets.

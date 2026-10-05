@@ -13,8 +13,19 @@
     "fallback": "UI pack \"{wanted}\" cannot be used. Using \"{used}\" instead.",
     "migrated": "Moved old data to {file}"
   },
-  "language": {
-    "label": "Language"
+  "nav": {
+    "label": "Navigation",
+    "collapse": "Collapse sidebar",
+    "expand": "Expand sidebar",
+    "live": "Live",
+    "content": "Content",
+    "presets": "Presets",
+    "library": "UI library",
+    "settings": "Settings"
+  },
+  "dialog": {
+    "ok": "OK",
+    "cancel": "Cancel"
   },
   "connection": {
     "online": "Connected",
@@ -26,14 +37,25 @@
     "pending": "Unpublished changes",
     "done": "Updated at {time}"
   },
-  "banner": {
-    "noPack": "No usable UI pack. Check the packs folder.",
-    "fallback": "UI pack \"{id}\" cannot be used. The default pack is in use."
-  },
   "scenes": {
     "title": "Scenes",
-    "hint": "A click takes effect at once.",
     "switched": "Switched to \"{name}\""
+  },
+  "live": {
+    "sub": "In use: {name}",
+    "scenes": "Scenes",
+    "scenesNote": "A click takes effect at once. Alt + a number key also works",
+    "preview": "Live preview"
+  },
+  "content": {
+    "sub": "Click \"Update\" or press Ctrl + Enter when you are done.",
+    "regions": "Overlay",
+    "screens": "Waiting screens",
+    "pending": "Not updated",
+    "discard": "Discard changes",
+    "discardTitle": "Discard all unpublished changes?",
+    "discardBody": "The text returns to what the overlay shows now.",
+    "none": "The current UI pack has no text to edit."
   },
   "presets": {
     "title": "Presets",
@@ -43,40 +65,67 @@
     "load": "Load",
     "remove": "Delete",
     "saved": "Saved preset \"{name}\"",
-    "loaded": "Loaded \"{name}\". Click Update to show it.",
+    "loaded": "Loaded \"{name}\". Check it, then click Update.",
     "removed": "Deleted preset \"{name}\"",
     "confirmRemove": "Delete preset \"{name}\"?",
-    "needName": "Enter a preset name first"
+    "needName": "Enter a preset name first",
+    "sub": "Save the current text on the Content page and load it again with one click.",
+    "saveTitle": "Save current content",
+    "name": "Name",
+    "saveNote": "This saves the text on the Content page. The current scene is not included.",
+    "listTitle": "Saved",
+    "emptyDesc": "Enter a name above to save the current text as a preset.",
+    "replaceTitle": "Replace preset \"{name}\"?",
+    "replaceBody": "A preset with the same name exists. Saving replaces it.",
+    "replace": "Replace"
   },
   "packs": {
-    "title": "UI library",
     "madeWith": "Made with TRM Live UI v{version}",
     "active": "In use",
     "use": "Use",
-    "confirmUse": "Switch to \"{name}\"? The overlay changes to this UI at once.",
-    "confirmDiscard": "You have unpublished changes. Switching the UI discards them. Continue?",
+    "confirmUse": "Switch to \"{name}\"?",
+    "confirmDiscard": "The Content page has unpublished changes. Switching discards them.",
     "import": "Import",
     "export": "Export",
     "remove": "Delete",
     "sourceBuiltin": "Built-in",
     "sourceImported": "Imported",
-    "importRejected": "\"{name}\" cannot be imported:",
-    "confirmImport": "Import \"{name}\" (v{version}, made with TRM Live UI v{madeWith})?",
+    "importRejected": "\"{name}\" cannot be imported",
+    "confirmImport": "Import \"{name}\"?",
     "scriptWarning": "This pack contains {count} script(s) that run in the overlay and the control panel. Import packs only from sources you trust.",
     "replaceWarning": "A UI pack with the same id exists. Importing replaces it, and the old one is backed up to data/backups.",
     "importDone": "Imported \"{name}\"",
-    "confirmRemove": "Delete UI pack \"{name}\"? It is moved to data/backups. Content and presets are kept.",
-    "removed": "Deleted \"{name}\""
+    "confirmRemove": "Delete UI pack \"{name}\"?",
+    "removed": "Deleted \"{name}\"",
+    "sub": "Each UI pack is a complete overlay. Switch, import and export them here.",
+    "listTitle": "All UI packs",
+    "listNote": "The pack in use comes first",
+    "empty": "No UI packs yet",
+    "confirmUseBody": "The overlay changes to this UI at once.",
+    "importBody": "Version v{version}, made with TRM Live UI v{madeWith}.",
+    "removeBody": "It is moved to data/backups. Content and presets are kept."
   },
-  "preview": {
-    "title": "Live preview"
+  "banner": {
+    "fallback": "UI pack \"{id}\" cannot be used. See the reason in the UI library.",
+    "fallbackTitle": "The default UI is in use",
+    "issuesTitle": "The current UI pack has notices"
   },
-  "sections": {
-    "regions": "Overlay",
-    "screens": "Waiting screens"
-  },
-  "form": {
-    "noFields": "Nothing to edit here."
+  "settings": {
+    "sub": "Panel language, the addresses OBS needs, and version information.",
+    "general": "General",
+    "language": "Panel language",
+    "obs": "OBS",
+    "obsNote": "Enter these two addresses in OBS",
+    "overlayUrl": "Overlay (Browser source)",
+    "panelUrl": "Control panel (Custom Browser Dock)",
+    "copy": "Copy",
+    "copied": "Copied",
+    "copyFailed": "Copy failed. Select the text instead.",
+    "about": "About",
+    "engine": "Program version",
+    "packFormat": "UI pack format",
+    "dataFormat": "Data format",
+    "componentApi": "Component API"
   },
   "kind": {
     "title": {

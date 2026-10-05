@@ -7,73 +7,24 @@
   <link rel="stylesheet" href="/panel/panel.css">
 </head>
 <body>
-  <header class="topbar">
-    <div class="brand">
-      <span class="brand-name">TRM Live UI</span>
-      <span class="tag" id="engine-version"></span>
+  <div class="shell" id="shell">
+    <header class="appbar">
+      <div class="appbar-brand">
+        <span class="brand-name">TRM Live UI</span>
+        <span id="sidebar-toggle"></span>
+      </div>
+      <div class="appbar-fill"></div>
+      <span class="appbar-status" id="connection"></span>
+    </header>
+    <div class="body">
+      <nav class="sidebar" id="sidebar">
+        <div class="sidebar-main" id="sidebar-main"></div>
+        <div class="sidebar-foot" id="sidebar-foot"></div>
+      </nav>
+      <main class="main" id="main"></main>
     </div>
-    <span class="topbar-pack" id="pack-name"></span>
-    <span class="spacer"></span>
-    <span class="connection" id="connection"></span>
-    <label class="select-wrap">
-      <span class="visually-hidden" data-i18n="language.label"></span>
-      <select class="select" id="language"></select>
-    </label>
-    <span class="save-state" id="save-state"></span>
-    <button class="btn btn-primary" id="publish" type="button" data-i18n="publish.button" data-i18n-title="publish.hint"></button>
-  </header>
-
-  <div class="banners" id="banners"></div>
-
-  <div class="layout">
-    <aside class="sidebar">
-      <section class="block">
-        <h2 class="block-title" data-i18n="scenes.title"></h2>
-        <div class="scene-list" id="scenes"></div>
-        <p class="help" data-i18n="scenes.hint"></p>
-      </section>
-
-      <section class="block">
-        <h2 class="block-title" data-i18n="presets.title"></h2>
-        <div class="list" id="presets"></div>
-        <form class="inline-form" id="preset-form">
-          <input class="input" id="preset-name" type="text" maxlength="80" data-i18n-placeholder="presets.namePlaceholder">
-          <button class="btn" type="submit" data-i18n="presets.save"></button>
-        </form>
-      </section>
-
-      <section class="block">
-        <div class="block-head">
-          <h2 class="block-title" data-i18n="packs.title"></h2>
-          <label class="btn btn-small">
-            <span data-i18n="packs.import"></span>
-            <input class="visually-hidden" id="pack-file" type="file" accept=".zip,application/zip">
-          </label>
-        </div>
-        <div class="list" id="packs"></div>
-      </section>
-    </aside>
-
-    <main class="main">
-      <section class="block">
-        <h2 class="block-title" data-i18n="preview.title"></h2>
-        <div class="preview" id="preview">
-          <iframe src="/overlay?preview=1" title="preview" tabindex="-1"></iframe>
-        </div>
-      </section>
-
-      <section class="block">
-        <h2 class="block-title" data-i18n="sections.regions"></h2>
-        <div class="card-grid" id="regions"></div>
-      </section>
-
-      <section class="block" id="screens-block">
-        <h2 class="block-title" data-i18n="sections.screens"></h2>
-        <div class="card-grid" id="screens"></div>
-      </section>
-    </main>
   </div>
-
+  <div class="notices" id="notices" aria-live="polite"></div>
   <script type="module" src="/panel/panel.js"></script>
 </body>
 </html>

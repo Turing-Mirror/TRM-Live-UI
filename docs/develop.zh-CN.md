@@ -272,7 +272,7 @@ export default function setup(api) {
 ## 约定
 
 - 界面上的文字都放进 `public/i18n/` 的语言包，代码里用 `t('key')` 取用，不写死。新增文案时三种语言一起加。
-- 控制面板的颜色、圆角和动效取自 TRM UI 的设计令牌，只用变量，不写颜色字面量。
+- 控制面板照 TRM UI 做：侧栏外壳、页头、小节、分组和各种控件都在 `public/panel/ui.js` 与 `public/panel/panel.css` 里，是 TRM UI 同名组件的无框架版本。新界面用这些组件和设计令牌搭，不另起样式，不写颜色字面量；拿不准时打开 TRM UI 对照。
 - 直播画面的外观写在 UI 包里，`public/overlay/overlay.css` 只放骨架。
 - 服务端不引入第三方依赖。
 - 注释写“为什么”，不复述代码。
