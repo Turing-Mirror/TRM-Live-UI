@@ -47,14 +47,6 @@ export const kinds = {
     },
   },
 
-  // Live2D 底板；模型在 OBS 里放在本画面上层
-  stage: {
-    fields: [{ key: 'label', label: '名牌' }],
-    render(el, data) {
-      if (data.label) el.append(h('span', 'stage-label', data.label));
-    },
-  },
-
   ticker: {
     fields: [
       { key: 'label', label: '标签' },
