@@ -54,7 +54,19 @@
     "active": "In use",
     "use": "Use",
     "confirmUse": "Switch to \"{name}\"? The overlay changes to this UI at once.",
-    "confirmDiscard": "You have unpublished changes. Switching the UI discards them. Continue?"
+    "confirmDiscard": "You have unpublished changes. Switching the UI discards them. Continue?",
+    "import": "Import",
+    "export": "Export",
+    "remove": "Delete",
+    "sourceBuiltin": "Built-in",
+    "sourceImported": "Imported",
+    "importRejected": "\"{name}\" cannot be imported:",
+    "confirmImport": "Import \"{name}\" (v{version}, made with TRM Live UI v{madeWith})?",
+    "scriptWarning": "This pack contains {count} script(s) that run in the overlay and the control panel. Import packs only from sources you trust.",
+    "replaceWarning": "A UI pack with the same id exists. Importing replaces it, and the old one is backed up to data/backups.",
+    "importDone": "Imported \"{name}\"",
+    "confirmRemove": "Delete UI pack \"{name}\"? It is moved to data/backups. Content and presets are kept.",
+    "removed": "Deleted \"{name}\""
   },
   "preview": {
     "title": "Live preview"
@@ -133,7 +145,18 @@
       "unusable": "UI pack \"{id}\" cannot be used.",
       "fontFailed": "The font {file} failed to load.",
       "styleFailed": "The style {file} failed to load.",
-      "componentFailed": "The component {file} failed to load: {message}"
+      "componentFailed": "The component {file} failed to load: {message}",
+      "exists": "A UI pack with the id \"{id}\" already exists.",
+      "builtinConflict": "\"{id}\" has the same id as a built-in UI pack and cannot be imported. Change the id in pack.json.",
+      "notRemovable": "\"{id}\" is a built-in UI pack and cannot be deleted.",
+      "importUnusable": "UI pack \"{id}\" has problems and cannot be imported.",
+      "componentApiTooNew": "This UI pack needs component API v{required}. This program supports v{supported}. Update TRM Live UI first."
+    },
+    "zip": {
+      "invalid": "The file is not a valid zip, or it is damaged.",
+      "unsupported": "This kind of zip is not supported (encrypted, split or very large files).",
+      "tooLarge": "The zip is too large or has too many files.",
+      "noManifest": "No pack.json was found in the zip."
     }
   }
 }

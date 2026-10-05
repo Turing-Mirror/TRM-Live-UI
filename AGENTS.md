@@ -18,5 +18,5 @@ Both `npm test` and `npm run check` must pass before a commit.
 - The control panel uses the TRM UI design tokens in `public/panel/panel.css`. Use the variables, never color literals.
 - When the structure of `pack.json` or user data changes: bump `PACK_FORMAT` or `DATA_FORMAT` in `server/version.js`, add a migration step, add a test, and update `schema/pack.schema.json` and the developer guides.
 - No third-party dependencies on the server.
-- `data/` (user content) and `internal/` (internal notes) are git-ignored. Never commit them.
+- `data/` (user content, imported packs in `data/packs/`) and `internal/` (internal notes) are git-ignored. Never commit them.
 - Comments are in Chinese and explain why, matching the existing code.

@@ -43,7 +43,13 @@
       </section>
 
       <section class="block">
-        <h2 class="block-title" data-i18n="packs.title"></h2>
+        <div class="block-head">
+          <h2 class="block-title" data-i18n="packs.title"></h2>
+          <label class="btn btn-small">
+            <span data-i18n="packs.import"></span>
+            <input class="visually-hidden" id="pack-file" type="file" accept=".zip,application/zip">
+          </label>
+        </div>
         <div class="list" id="packs"></div>
       </section>
     </aside>

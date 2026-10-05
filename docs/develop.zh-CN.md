@@ -12,6 +12,8 @@ server/            本地服务（Node.js，无第三方依赖）
   http.js          全部接口与静态文件
   state.js         当前使用的包、推送给画面和面板的完整状态、文件监听
   packs.js         UI 包的读取、迁移、结构校验、版本兼容检查
+  packio.js        UI 包的导入、导出与删除
+  zip.js           最小的 zip 读写（只用 Node 自带的 zlib）
   content.js       用户内容的读写与迁移
   presets.js       预设
   config.js        程序设置（config/default.json + data/config.json）
@@ -25,12 +27,12 @@ public/
   overlay/         直播画面的骨架与幕布
   panel/           控制面板
   i18n/            界面语言包，放入新文件即可增加语言
-packs/<id>/        UI 包
+packs/<id>/        程序自带的 UI 包（更新程序时会被替换）
 schema/            pack.json 的 JSON Schema
 scripts/check.mjs  提交前的硬校验
 test/              单元测试
 config/default.json 默认设置
-data/              用户数据（不进仓库）
+data/              用户数据（不进仓库），导入的 UI 包在 data/packs/<id>/
 ```
 
 ## 常用命令
@@ -51,7 +53,7 @@ npm run check
 
 ## UI 包
 
-一个 UI 包是 `packs/<id>/` 下的一个文件夹：
+一个 UI 包是一个文件夹。程序自带的放在 `packs/<id>/`，用户导入的放在 `data/packs/<id>/`，两处的 id 不能重复：
 
 ```
 packs/my-pack/
@@ -75,6 +77,7 @@ packs/my-pack/
 | `version` | 是 | 这个包自己的版本，x.y.z |
 | `madeWith` | 是 | 制作时使用的 TRM Live UI 版本，界面库里显示为“在 vX 制作” |
 | `requires` | 否 | 能使用这个包的最低程序版本 |
+| `componentApi` | 带组件时建议填 | 组件需要的组件接口版本，目前为 1 |
 | `name`、`description` | name 必填 | 文字，可以是字符串，也可以按语言分开写 |
 | `author` | 否 | 作者 |
 | `canvas` | 是 | 画布宽高 |
@@ -153,6 +156,15 @@ packs/my-pack/
 
 `regions` 按区域 id，`screens` 按状态 id。用户的内容会叠在默认文字上，所以包新增的字段会自动有默认值。
 
+### 分享 UI 包
+
+在面板里点“导出”即可得到 zip。也可以自己压缩：pack.json 放在 zip 根目录，或放在唯一的顶层文件夹里都可以。导入时：
+
+- 先在临时文件夹里按正常的包完整检查一遍，有问题就不安装。
+- 不接受越界路径（如 `../`）、加密或分卷的 zip。
+- 不能与程序自带的包同 id；与已导入的包同 id 时需要确认覆盖，旧的会备份。
+- 包里带组件脚本时，面板会提醒用户。
+
 ## 组件
 
 包可以自带区域类型和动画。组件脚本是 ES 模块，默认导出一个函数：
@@ -199,7 +211,7 @@ export default function setup(api) {
 | 程序版本 | `package.json` 的 `version` | UI 包用 `requires` 声明最低版本，用 `madeWith` 记录制作版本 |
 | 包格式 | `server/version.js` 的 `PACK_FORMAT` | pack.json 的结构版本 |
 | 数据格式 | `server/version.js` 的 `DATA_FORMAT` | 用户内容与预设的结构版本 |
-| 组件接口 | `public/core/registry.js` 的 `COMPONENT_API` | 组件脚本拿到的 api 的版本 |
+| 组件接口 | `server/version.js` 的 `COMPONENT_API` | 组件脚本拿到的 api 的版本，UI 包用 `componentApi` 声明需要的版本 |
 
 程序遇到不同版本时的处理：
 
@@ -208,6 +220,7 @@ export default function setup(api) {
 | 包的 `format` 比程序支持的新 | 不能使用，提示先更新程序 |
 | 包的 `format` 较旧 | 按 `PACK_MIGRATIONS` 逐级升级后使用 |
 | 包的 `requires` 比程序版本高 | 不能使用，提示需要的版本 |
+| 包的 `componentApi` 比程序支持的高 | 不能使用，提示先更新程序 |
 | 包的 `madeWith` 大版本比程序新 | 可以使用，提示部分效果可能不同 |
 | 选中的包不能用 | 依次改用默认包、任意能用的包，面板显示原因 |
 | 用户数据是旧格式 | 按 `DATA_MIGRATIONS` 逐级升级 |
@@ -230,6 +243,10 @@ export default function setup(api) {
 | GET | `/events` | 推送完整状态（Server-Sent Events） |
 | GET | `/api/state` | 当前完整状态 |
 | GET | `/api/packs` | 界面库 |
+| POST | `/api/packs/inspect` | 导入前预览，请求体是 zip |
+| POST | `/api/packs/import` | 导入，请求体是 zip；`?replace=1` 覆盖同名的已导入包 |
+| GET | `/api/packs/:id/export` | 导出为 zip |
+| DELETE | `/api/packs/:id` | 删除已导入的包（移到 data/backups） |
 | GET | `/api/locales` | 可用的界面语言 |
 | PUT | `/api/config` | 修改设置：`{ activePack?, language? }` |
 | PUT | `/api/content` | 保存文字：`{ regions, screens }` |

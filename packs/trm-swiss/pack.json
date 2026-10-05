@@ -5,6 +5,7 @@
   "version": "1.0.0",
   "madeWith": "1.0.0",
   "requires": "1.0.0",
+  "componentApi": 1,
   "name": {
     "zh-CN": "图灵镜 · 瑞士",
     "en-US": "Turing Mirror · Swiss",

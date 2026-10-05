@@ -1,10 +1,11 @@
 // 程序的当前状态：正在使用哪个 UI 包、它的内容，以及推送给画面和面板的数据
 import fs from 'node:fs';
+import path from 'node:path';
 import { PATHS } from './paths.js';
 import { getConfig } from './config.js';
 import { listPackIds, loadPack, summarize } from './packs.js';
 import { readContent } from './content.js';
-import { ENGINE_VERSION, PACK_FORMAT, DATA_FORMAT } from './version.js';
+import { ENGINE_VERSION, PACK_FORMAT, DATA_FORMAT, COMPONENT_API } from './version.js';
 
 const cache = new Map();
 
@@ -41,7 +42,7 @@ export function buildState() {
   const config = getConfig();
   const { pack, fallbackFrom } = resolveActivePack();
   return {
-    engine: { version: ENGINE_VERSION, packFormat: PACK_FORMAT.current, dataFormat: DATA_FORMAT },
+    engine: { version: ENGINE_VERSION, packFormat: PACK_FORMAT.current, dataFormat: DATA_FORMAT, componentApi: COMPONENT_API },
     config: { language: config.language, activePack: config.activePack },
     pack: pack && {
       id: pack.id,
@@ -79,20 +80,26 @@ setInterval(() => {
   for (const res of clients) res.write(': ping\n\n');
 }, 25000).unref();
 
-/** 包或用户数据在磁盘上被改动时，重新读取并推送。改 UI 包时可以边改边看。 */
+/**
+ * 包或用户数据在磁盘上被改动时，重新读取并推送。改 UI 包时可以边改边看。
+ * 包的修订号取文件修改时间，重新读取不会让没改过的包重建画面。
+ */
 export function watchFiles() {
   let timer;
+  let reloadPacks = false;
   const schedule = (reload) => {
+    reloadPacks ||= reload;
     clearTimeout(timer);
     timer = setTimeout(() => {
-      if (reload) forgetPacks();
+      if (reloadPacks) forgetPacks();
+      reloadPacks = false;
       broadcast();
     }, 150);
   };
-  const watch = (dir, reload) => {
-    fs.mkdirSync(dir, { recursive: true });
-    fs.watch(dir, { recursive: true }, () => schedule(reload));
-  };
-  watch(PATHS.packs, true);
-  watch(PATHS.data, false);
+  const userPacksFolder = path.relative(PATHS.data, PATHS.userPacks);
+  const isUserPack = (file) => typeof file === 'string' && file.startsWith(userPacksFolder);
+  fs.mkdirSync(PATHS.packs, { recursive: true });
+  fs.mkdirSync(PATHS.userPacks, { recursive: true });
+  fs.watch(PATHS.packs, { recursive: true }, () => schedule(true));
+  fs.watch(PATHS.data, { recursive: true }, (event, file) => schedule(isUserPack(file)));
 }

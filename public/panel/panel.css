@@ -185,6 +185,12 @@ body {
   gap: 10px;
   align-content: start;
 }
+.block-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
 .block-title {
   margin: 0;
   font-size: 15.5px;
@@ -389,6 +395,17 @@ body {
   gap: 3px;
 }
 .pack.is-unusable .row-title { color: var(--help); }
+.pack-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+.pack-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
 
 .inline-form {
   display: flex;

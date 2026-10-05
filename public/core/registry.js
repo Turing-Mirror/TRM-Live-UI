@@ -8,11 +8,10 @@
 //     api.registerKind('clock', { fields: [...], render(el, data, def, ctx) { ... } });
 //   }
 //
-// COMPONENT_API 是这套接口的版本。接口有不兼容的改动时加一，组件可据此判断。
+// 这套接口的版本由服务端的 COMPONENT_API 决定（server/version.js），随状态一起传来。
+// 接口有不兼容的改动时加一；UI 包在 pack.json 里用 componentApi 声明需要的版本。
 import { h } from './dom.js';
 import { builtinKinds } from './kinds.js';
-
-export const COMPONENT_API = 1;
 
 /** 按序号循环取 UI 包调色板里的颜色。 */
 export function paletteColor(index) {
@@ -24,7 +23,7 @@ export function createRegistry(engine) {
   const kinds = new Map(Object.entries(builtinKinds));
   const animations = new Map();
   const api = {
-    apiVersion: COMPONENT_API,
+    apiVersion: engine.componentApi,
     engineVersion: engine.version,
     h,
     paletteColor,

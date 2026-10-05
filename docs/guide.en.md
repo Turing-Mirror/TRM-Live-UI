@@ -75,7 +75,12 @@ Presets do not include the current scene. Each UI pack has its own presets.
 
 ### UI library
 
-The library lists every UI pack in the `packs` folder and shows the program version each pack was made with. If a pack cannot be used, the reason is shown, such as a newer program version being required. Click "Use" to switch to another UI.
+The library lists every UI pack and shows the program version each pack was made with. If a pack cannot be used, the reason is shown, such as a newer program version being required.
+
+- **Use**: Switches to this UI. The overlay changes at once.
+- **Import**: Choose the zip file of a UI pack. Before the import, the pack's name and version are shown. If the pack contains scripts, you are warned. Import packs only from sources you trust.
+- **Export**: Saves the UI pack as a zip file that you can send to others.
+- **Delete**: Only imported packs can be deleted. Built-in packs cannot. A deleted pack is moved to `data/backups/`, and its content and presets are kept.
 
 ## Where data is stored
 
@@ -83,6 +88,7 @@ The library lists every UI pack in the `packs` folder and shows the program vers
 |---|---|
 | `data/content/` | Text content and the current scene for each UI pack |
 | `data/presets/` | Presets for each UI pack |
+| `data/packs/` | Imported UI packs |
 | `data/config.json` | Settings you changed, such as the panel language, the UI pack in use and the port |
 | `data/backups/` | Backups of broken files and of data from older versions |
 

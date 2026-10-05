@@ -14,6 +14,8 @@ export const PATHS = {
   data: path.join(ROOT, 'data'),
   userConfig: path.join(ROOT, 'data', 'config.json'),
   content: path.join(ROOT, 'data', 'content'),
+  // 用户导入的 UI 包；程序自带的在 packs/，更新程序时只替换后者
+  userPacks: path.join(ROOT, 'data', 'packs'),
   presets: path.join(ROOT, 'data', 'presets'),
   backups: path.join(ROOT, 'data', 'backups'),
   // v1 之前的旧位置，只在迁移时读取

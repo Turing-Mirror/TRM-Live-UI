@@ -186,21 +186,80 @@ function renderPacks() {
     info.append(h('span', 'row-title', localize(pack.name) || pack.id));
     const meta = [pack.version && `v${pack.version}`, pack.author].filter(Boolean).join(' · ');
     if (meta) info.append(h('span', 'meta', meta));
-    if (pack.madeWith) info.append(h('span', 'tag', t('packs.madeWith', { version: pack.madeWith })));
+    const tags = h('div', 'pack-tags');
+    tags.append(h('span', 'tag', t(pack.builtin ? 'packs.sourceBuiltin' : 'packs.sourceImported')));
+    if (pack.madeWith) tags.append(h('span', 'tag', t('packs.madeWith', { version: pack.madeWith })));
+    info.append(tags);
     for (const issue of pack.issues) {
       info.append(h('span', `help ${issue.level === 'error' ? 'danger' : 'warn'}`, describe(issue)));
     }
-    row.append(info);
+
+    const actions = h('div', 'pack-actions');
     if (pack.id === activeId) {
-      row.append(h('span', 'tag tag-accent', t('packs.active')));
+      actions.append(h('span', 'tag tag-accent', t('packs.active')));
     } else if (pack.usable) {
-      const use = h('button', 'btn btn-small', t('packs.use'));
-      use.type = 'button';
-      use.addEventListener('click', () => usePack(pack));
-      row.append(use);
+      actions.append(button(t('packs.use'), () => usePack(pack)));
     }
+    const exportLink = h('a', 'btn btn-small btn-quiet', t('packs.export'));
+    exportLink.href = api.pack.exportUrl(pack.id);
+    exportLink.download = '';
+    actions.append(exportLink);
+    if (!pack.builtin) actions.append(button(t('packs.remove'), () => removePack(pack), 'btn-quiet'));
+
+    row.append(info, actions);
     return row;
   }));
+}
+
+function button(label, onClick, extra = '') {
+  const el = h('button', `btn btn-small ${extra}`, label);
+  el.type = 'button';
+  el.addEventListener('click', onClick);
+  return el;
+}
+
+/** 导入：先让服务端检查并说明这个包（含不含脚本、会不会覆盖），确认后才安装。 */
+async function importPackFile(file) {
+  try {
+    const info = await api.pack.inspect(file);
+    const name = localize(info.name) || info.id;
+    const errors = info.issues.filter((issue) => issue.level === 'error');
+    if (errors.length) {
+      alert([t('packs.importRejected', { name }), ...errors.map(describe)].join('\n'));
+      return;
+    }
+    if (info.exists === 'builtin') {
+      alert(describe({ code: 'pack.builtinConflict', params: { id: info.id } }));
+      return;
+    }
+    const lines = [t('packs.confirmImport', { name, version: info.version, madeWith: info.madeWith })];
+    if (info.components) lines.push(t('packs.scriptWarning', { count: info.components }));
+    if (info.exists === 'user') lines.push(t('packs.replaceWarning'));
+    if (!confirm(lines.join('\n\n'))) return;
+    await api.pack.install(file, info.exists === 'user');
+    flash(t('packs.importDone', { name }), 'ok');
+    loadPacks();
+  } catch (err) {
+    report(err);
+  }
+}
+
+$('pack-file').addEventListener('change', (event) => {
+  const [file] = event.target.files;
+  event.target.value = '';
+  if (file) importPackFile(file);
+});
+
+async function removePack(pack) {
+  const name = localize(pack.name) || pack.id;
+  if (!confirm(t('packs.confirmRemove', { name }))) return;
+  try {
+    store.packs = await api.pack.remove(pack.id);
+    renderPacks();
+    flash(t('packs.removed', { name }));
+  } catch (err) {
+    report(err);
+  }
 }
 
 async function usePack(pack) {

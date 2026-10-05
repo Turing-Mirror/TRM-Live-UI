@@ -1,13 +1,14 @@
 // UI 包：发现、读取、旧格式迁移、结构校验、版本兼容检查
 //
-// 一个 UI 包是 packs/<id>/ 下的一个文件夹，入口是 pack.json。
+// 一个 UI 包是一个文件夹，入口是 pack.json。程序自带的在 packs/<id>/，用户导入的在 data/packs/<id>/。
+// 两处的 id 不能重复；重复时以自带的为准。
 // 检查结果统一为 issues：{ level: 'error' | 'warning', code, params }。
 // 有 error 的包不能使用；warning 只提示，不影响使用。
 import fs from 'node:fs';
 import path from 'node:path';
 import { PATHS, inside } from './paths.js';
 import { readJson, isObject } from './store.js';
-import { ENGINE_VERSION, PACK_FORMAT, compareVersions, isVersion, majorOf } from './version.js';
+import { ENGINE_VERSION, PACK_FORMAT, COMPONENT_API, compareVersions, isVersion, majorOf } from './version.js';
 
 const ID = /^[a-z0-9][a-z0-9-]*$/;
 
@@ -45,6 +46,11 @@ export function checkCompatibility(manifest) {
   }
   if (isVersion(requires) && compareVersions(requires, ENGINE_VERSION) > 0) {
     issues.push(issue('error', 'pack.requiresEngine', { required: requires, engine: ENGINE_VERSION }));
+  }
+  if (manifest.componentApi !== undefined && !(Number.isInteger(manifest.componentApi) && manifest.componentApi >= 1)) {
+    issues.push(issue('error', 'pack.invalidField', { field: 'componentApi' }));
+  } else if (manifest.componentApi > COMPONENT_API) {
+    issues.push(issue('error', 'pack.componentApiTooNew', { required: manifest.componentApi, supported: COMPONENT_API }));
   }
   if (isVersion(madeWith) && majorOf(madeWith) > majorOf(ENGINE_VERSION)) {
     issues.push(issue('warning', 'pack.madeWithNewer', { madeWith, engine: ENGINE_VERSION }));
@@ -123,18 +129,45 @@ function normalize(manifest) {
   };
 }
 
-const packDir = (id) => path.join(PATHS.packs, id);
-
-export function listPackIds() {
-  if (!fs.existsSync(PATHS.packs)) return [];
-  return fs.readdirSync(PATHS.packs, { withFileTypes: true })
-    .filter((entry) => entry.isDirectory() && fs.existsSync(path.join(PATHS.packs, entry.name, 'pack.json')))
-    .map((entry) => entry.name);
+function scan(root, builtin) {
+  if (!fs.existsSync(root)) return [];
+  return fs.readdirSync(root, { withFileTypes: true })
+    .filter((entry) => entry.isDirectory() && !entry.name.startsWith('.') && fs.existsSync(path.join(root, entry.name, 'pack.json')))
+    .map((entry) => ({ id: entry.name, dir: path.join(root, entry.name), builtin }));
 }
 
-/** 读取一个包。无论是否可用都返回结果，问题写在 issues 里。 */
-export function loadPack(id) {
-  const dir = packDir(id);
+/** 所有包的位置：[{ id, dir, builtin }]，自带的在前。 */
+export function listPackEntries() {
+  const builtins = scan(PATHS.packs, true);
+  const taken = new Set(builtins.map((entry) => entry.id));
+  return [...builtins, ...scan(PATHS.userPacks, false).filter((entry) => !taken.has(entry.id))];
+}
+
+export function listPackIds() {
+  return listPackEntries().map((entry) => entry.id);
+}
+
+export function findPackEntry(id) {
+  return listPackEntries().find((entry) => entry.id === id) ?? null;
+}
+
+/** 修订号取包内文件的最后修改时间：文件没变，修订号就不变，画面不必重建。 */
+function revisionOf(dir) {
+  let latest = 0;
+  const walk = (current) => {
+    for (const entry of fs.readdirSync(current, { withFileTypes: true })) {
+      const full = path.join(current, entry.name);
+      if (entry.isDirectory()) walk(full);
+      else latest = Math.max(latest, fs.statSync(full).mtimeMs);
+    }
+  };
+  walk(dir);
+  return Math.round(latest);
+}
+
+/** 读取一个包。无论是否可用都返回结果，问题写在 issues 里。dir 省略时按 id 查找。 */
+export function loadPack(id, dir = findPackEntry(id)?.dir) {
+  if (!dir) return { id, usable: false, issues: [issue('error', 'pack.notFound', { id })] };
   const exists = (file) => {
     const full = path.join(dir, file);
     return inside(dir, full) && fs.existsSync(full);
@@ -162,7 +195,8 @@ export function loadPack(id) {
     id,
     usable,
     issues,
-    revision: Date.now(),
+    revision: revisionOf(dir),
+    builtin: inside(PATHS.packs, dir),
     base: `/packs/${encodeURIComponent(id)}/`,
     manifest: usable ? normalize(manifest) : manifest,
     defaults,
@@ -174,6 +208,7 @@ export function summarize(pack) {
   const m = pack.manifest ?? {};
   return {
     id: pack.id,
+    builtin: pack.builtin,
     usable: pack.usable,
     issues: pack.issues,
     name: m.name ?? pack.id,

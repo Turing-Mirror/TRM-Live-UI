@@ -54,7 +54,19 @@
     "active": "使用中",
     "use": "使用",
     "confirmUse": "改用“{name}”？直播画面会马上换成这套界面。",
-    "confirmDiscard": "有改动尚未更新，切换界面会丢掉这些改动。继续吗？"
+    "confirmDiscard": "有改动尚未更新，切换界面会丢掉这些改动。继续吗？",
+    "import": "导入",
+    "export": "导出",
+    "remove": "删除",
+    "sourceBuiltin": "自带",
+    "sourceImported": "已导入",
+    "importRejected": "“{name}”无法导入：",
+    "confirmImport": "导入“{name}”（v{version}，在 TRM Live UI v{madeWith} 制作）？",
+    "scriptWarning": "这个包带有 {count} 个脚本，会在直播画面和控制面板里运行。请只导入你信任的来源。",
+    "replaceWarning": "已有同名的 UI 包，导入后会替换它，旧的会备份到 data/backups。",
+    "importDone": "已导入“{name}”",
+    "confirmRemove": "删除 UI 包“{name}”？它会被移到 data/backups，内容和预设保留。",
+    "removed": "已删除“{name}”"
   },
   "preview": {
     "title": "实时预览"
@@ -133,7 +145,18 @@
       "unusable": "UI 包“{id}”无法使用。",
       "fontFailed": "字体 {file} 载入失败。",
       "styleFailed": "样式 {file} 载入失败。",
-      "componentFailed": "组件 {file} 载入失败：{message}"
+      "componentFailed": "组件 {file} 载入失败：{message}",
+      "exists": "已有 id 为“{id}”的 UI 包。",
+      "builtinConflict": "“{id}”与程序自带的 UI 包同名，不能导入。请修改 pack.json 里的 id。",
+      "notRemovable": "“{id}”是程序自带的 UI 包，不能删除。",
+      "importUnusable": "UI 包“{id}”有问题，不能导入。",
+      "componentApiTooNew": "这个 UI 包需要组件接口 v{required}，当前程序支持 v{supported}，请先更新 TRM Live UI。"
+    },
+    "zip": {
+      "invalid": "文件不是有效的 zip，或已损坏。",
+      "unsupported": "不支持这种 zip（加密、分卷或超大文件）。",
+      "tooLarge": "zip 太大或文件太多。",
+      "noManifest": "zip 里找不到 pack.json。"
     }
   }
 }

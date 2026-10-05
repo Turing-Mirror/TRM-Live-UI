@@ -4,83 +4,217 @@
   "title": "TRM Live UI pack",
   "description": "pack.json of a TRM Live UI pack (format 1). The server checks the same rules in server/packs.js.",
   "type": "object",
-  "required": ["format", "id", "version", "madeWith", "name", "canvas", "regions"],
+  "required": [
+    "format",
+    "id",
+    "version",
+    "madeWith",
+    "name",
+    "canvas",
+    "regions"
+  ],
   "properties": {
-    "$schema": { "type": "string" },
-    "format": { "const": 1, "description": "Structure version of pack.json." },
-    "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$", "description": "Must match the folder name." },
-    "version": { "$ref": "#/$defs/version", "description": "Version of this pack." },
-    "madeWith": { "$ref": "#/$defs/version", "description": "TRM Live UI version the pack was made with." },
-    "requires": { "$ref": "#/$defs/version", "description": "Lowest TRM Live UI version that can use the pack." },
-    "name": { "$ref": "#/$defs/text" },
-    "description": { "$ref": "#/$defs/text" },
-    "author": { "type": "string" },
+    "$schema": {
+      "type": "string"
+    },
+    "format": {
+      "const": 1,
+      "description": "Structure version of pack.json."
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]*$",
+      "description": "Must match the folder name."
+    },
+    "version": {
+      "$ref": "#/$defs/version",
+      "description": "Version of this pack."
+    },
+    "madeWith": {
+      "$ref": "#/$defs/version",
+      "description": "TRM Live UI version the pack was made with."
+    },
+    "requires": {
+      "$ref": "#/$defs/version",
+      "description": "Lowest TRM Live UI version that can use the pack."
+    },
+    "componentApi": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Component API version the pack needs. Packs without components can leave it out."
+    },
+    "name": {
+      "$ref": "#/$defs/text"
+    },
+    "description": {
+      "$ref": "#/$defs/text"
+    },
+    "author": {
+      "type": "string"
+    },
     "canvas": {
       "type": "object",
-      "required": ["width", "height"],
+      "required": [
+        "width",
+        "height"
+      ],
       "properties": {
-        "width": { "type": "number", "exclusiveMinimum": 0 },
-        "height": { "type": "number", "exclusiveMinimum": 0 }
+        "width": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "height": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        }
       }
     },
     "fonts": {
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["family", "src"],
+        "required": [
+          "family",
+          "src"
+        ],
         "properties": {
-          "family": { "type": "string" },
-          "weight": { "type": ["number", "string"] },
-          "style": { "type": "string" },
-          "src": { "type": "string", "description": "Path inside the pack." }
+          "family": {
+            "type": "string"
+          },
+          "weight": {
+            "type": [
+              "number",
+              "string"
+            ]
+          },
+          "style": {
+            "type": "string"
+          },
+          "src": {
+            "type": "string",
+            "description": "Path inside the pack."
+          }
         }
       }
     },
-    "styles": { "type": "array", "items": { "type": "string" }, "description": "CSS files inside the pack." },
-    "components": { "type": "array", "items": { "type": "string" }, "description": "ES modules inside the pack that register kinds and animations." },
-    "content": { "type": "string", "description": "Default content file inside the pack." },
+    "styles": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "CSS files inside the pack."
+    },
+    "components": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "ES modules inside the pack that register kinds and animations."
+    },
+    "content": {
+      "type": "string",
+      "description": "Default content file inside the pack."
+    },
     "theme": {
       "type": "object",
       "properties": {
-        "fonts": { "type": "object", "additionalProperties": { "type": "string" } },
-        "radius": { "type": "number" },
-        "colors": { "type": "object", "additionalProperties": { "type": "string" } },
-        "palette": { "type": "array", "items": { "type": "string" } },
-        "sizes": { "type": "object", "additionalProperties": { "type": "number" } }
+        "fonts": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "radius": {
+          "type": "number"
+        },
+        "colors": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "palette": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "sizes": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "number"
+          }
+        }
       }
     },
     "regions": {
       "type": "array",
       "items": {
-        "allOf": [{ "$ref": "#/$defs/rect" }],
+        "allOf": [
+          {
+            "$ref": "#/$defs/rect"
+          }
+        ],
         "type": "object",
-        "required": ["id", "kind", "x", "y", "w", "h"],
+        "required": [
+          "id",
+          "kind",
+          "x",
+          "y",
+          "w",
+          "h"
+        ],
         "properties": {
-          "id": { "type": "string" },
-          "kind": { "type": "string", "description": "Built-in: hole, title, status, notice, ticker. Packs can add more." },
-          "label": { "$ref": "#/$defs/text" },
-          "options": { "type": "object" }
+          "id": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string",
+            "description": "Built-in: hole, title, status, notice, ticker. Packs can add more."
+          },
+          "label": {
+            "$ref": "#/$defs/text"
+          },
+          "options": {
+            "type": "object"
+          }
         }
       }
     },
     "scenes": {
       "type": "object",
       "properties": {
-        "curtain": { "$ref": "#/$defs/rect", "description": "Area covered by waiting screens." },
+        "curtain": {
+          "$ref": "#/$defs/rect",
+          "description": "Area covered by waiting screens."
+        },
         "items": {
           "type": "array",
           "items": {
             "type": "object",
-            "required": ["id"],
+            "required": [
+              "id"
+            ],
             "properties": {
-              "id": { "type": "string" },
-              "label": { "$ref": "#/$defs/text" },
+              "id": {
+                "type": "string"
+              },
+              "label": {
+                "$ref": "#/$defs/text"
+              },
               "screen": {
                 "type": "object",
-                "required": ["kind"],
+                "required": [
+                  "kind"
+                ],
                 "properties": {
-                  "kind": { "type": "string", "description": "Built-in: screen." },
-                  "options": { "type": "object" }
+                  "kind": {
+                    "type": "string",
+                    "description": "Built-in: screen."
+                  },
+                  "options": {
+                    "type": "object"
+                  }
                 }
               }
             }
@@ -90,22 +224,45 @@
     }
   },
   "$defs": {
-    "version": { "type": "string", "pattern": "^v?\\d+\\.\\d+\\.\\d+$" },
+    "version": {
+      "type": "string",
+      "pattern": "^v?\\d+\\.\\d+\\.\\d+$"
+    },
     "text": {
       "description": "A plain string, or one string per language such as { \"zh-CN\": \"…\", \"en-US\": \"…\", \"ja-JP\": \"…\" }.",
       "oneOf": [
-        { "type": "string" },
-        { "type": "object", "additionalProperties": { "type": "string" } }
+        {
+          "type": "string"
+        },
+        {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
       ]
     },
     "rect": {
       "type": "object",
-      "required": ["x", "y", "w", "h"],
+      "required": [
+        "x",
+        "y",
+        "w",
+        "h"
+      ],
       "properties": {
-        "x": { "type": "number" },
-        "y": { "type": "number" },
-        "w": { "type": "number" },
-        "h": { "type": "number" }
+        "x": {
+          "type": "number"
+        },
+        "y": {
+          "type": "number"
+        },
+        "w": {
+          "type": "number"
+        },
+        "h": {
+          "type": "number"
+        }
       }
     }
   }

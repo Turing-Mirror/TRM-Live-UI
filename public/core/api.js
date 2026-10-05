@@ -18,12 +18,13 @@ export function subscribe(onState, onConnection) {
 }
 
 async function request(method, url, body) {
+  const raw = body instanceof Blob || body instanceof ArrayBuffer;
   let res;
   try {
     res = await fetch(url, {
       method,
-      headers: body === undefined ? undefined : { 'Content-Type': 'application/json' },
-      body: body === undefined ? undefined : JSON.stringify(body),
+      headers: body === undefined ? undefined : { 'Content-Type': raw ? 'application/zip' : 'application/json' },
+      body: body === undefined || raw ? body : JSON.stringify(body),
     });
   } catch {
     throw new ApiError({ code: 'request.offline' });
@@ -38,6 +39,12 @@ const presetUrl = (name) => `/api/presets/${encodeURIComponent(name)}`;
 export const api = {
   state: () => request('GET', '/api/state'),
   packs: () => request('GET', '/api/packs'),
+  pack: {
+    inspect: (file) => request('POST', '/api/packs/inspect', file),
+    install: (file, replace = false) => request('POST', `/api/packs/import${replace ? '?replace=1' : ''}`, file),
+    remove: (id) => request('DELETE', `/api/packs/${encodeURIComponent(id)}`),
+    exportUrl: (id) => `/api/packs/${encodeURIComponent(id)}/export`,
+  },
   locales: () => request('GET', '/api/locales'),
   setConfig: (patch) => request('PUT', '/api/config', patch),
   saveContent: (content) => request('PUT', '/api/content', content),

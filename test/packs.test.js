@@ -63,3 +63,8 @@ test('自带的每个 UI 包都能用', () => {
     assert.ok(pack.usable, `${id}: ${JSON.stringify(pack.issues)}`);
   }
 });
+
+test('需要更新组件接口的包不能用', () => {
+  const issues = checkCompatibility({ ...minimal(), componentApi: 999 });
+  assert.deepEqual(codes(issues), ['pack.componentApiTooNew']);
+});

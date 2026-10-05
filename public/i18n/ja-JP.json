@@ -54,7 +54,19 @@
     "active": "使用中",
     "use": "使う",
     "confirmUse": "「{name}」に切り替えますか？配信画面がすぐにこの UI に変わります。",
-    "confirmDiscard": "未反映の変更があります。UI を切り替えると変更は失われます。続けますか？"
+    "confirmDiscard": "未反映の変更があります。UI を切り替えると変更は失われます。続けますか？",
+    "import": "読み込み",
+    "export": "書き出し",
+    "remove": "削除",
+    "sourceBuiltin": "内蔵",
+    "sourceImported": "追加済み",
+    "importRejected": "「{name}」は読み込めません：",
+    "confirmImport": "「{name}」（v{version}、TRM Live UI v{madeWith} で作成）を読み込みますか？",
+    "scriptWarning": "このパックには {count} 個のスクリプトが含まれ、配信画面とコントロールパネルで実行されます。信頼できる提供元のパックだけを読み込んでください。",
+    "replaceWarning": "同じ id の UI パックがあります。読み込むと置き換わり、古いものは data/backups にバックアップされます。",
+    "importDone": "「{name}」を読み込みました",
+    "confirmRemove": "UI パック「{name}」を削除しますか？data/backups に移されます。内容とプリセットは残ります。",
+    "removed": "「{name}」を削除しました"
   },
   "preview": {
     "title": "ライブプレビュー"
@@ -133,7 +145,18 @@
       "unusable": "UI パック「{id}」は使えません。",
       "fontFailed": "フォント {file} を読み込めませんでした。",
       "styleFailed": "スタイル {file} を読み込めませんでした。",
-      "componentFailed": "コンポーネント {file} を読み込めませんでした：{message}"
+      "componentFailed": "コンポーネント {file} を読み込めませんでした：{message}",
+      "exists": "id が「{id}」の UI パックはすでにあります。",
+      "builtinConflict": "「{id}」は内蔵の UI パックと同じ id のため読み込めません。pack.json の id を変更してください。",
+      "notRemovable": "「{id}」は内蔵の UI パックのため削除できません。",
+      "importUnusable": "UI パック「{id}」には問題があるため読み込めません。",
+      "componentApiTooNew": "この UI パックにはコンポーネント API v{required} が必要です。このプログラムは v{supported} に対応しています。先に TRM Live UI を更新してください。"
+    },
+    "zip": {
+      "invalid": "ファイルが正しい zip ではないか、壊れています。",
+      "unsupported": "この種類の zip には対応していません（暗号化、分割、非常に大きなファイル）。",
+      "tooLarge": "zip が大きすぎるか、ファイルが多すぎます。",
+      "noManifest": "zip の中に pack.json が見つかりません。"
     }
   }
 }

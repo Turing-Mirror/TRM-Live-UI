@@ -12,6 +12,8 @@ server/            ローカルサービス（Node.js、サードパーティ依
   http.js          すべてのエンドポイントと静的ファイル
   state.js         使用中のパック、配信画面とパネルへ送る全体の状態、ファイル監視
   packs.js         UI パックの読み込み、移行、構造チェック、互換性チェック
+  packio.js        UI パックの読み込み（インポート）、書き出し、削除
+  zip.js           最小限の zip の読み書き（Node 内蔵の zlib のみ使用）
   content.js       ユーザーの内容の読み書きと移行
   presets.js       プリセット
   config.js        プログラムの設定（config/default.json + data/config.json）
@@ -25,12 +27,12 @@ public/
   overlay/         配信画面の骨組みと幕
   panel/           コントロールパネル
   i18n/            パネルの言語ファイル。ファイルを追加すると言語が増えます
-packs/<id>/        UI パック
+packs/<id>/        内蔵の UI パック（プログラムの更新時に置き換わります）
 schema/            pack.json の JSON Schema
 scripts/check.mjs  コミット前に通すべきチェック
 test/              単体テスト
 config/default.json 既定の設定
-data/              ユーザーデータ（コミットしない）
+data/              ユーザーデータ（コミットしない）。読み込んだ UI パックは data/packs/<id>/ にあります
 ```
 
 ## コマンド
@@ -51,7 +53,7 @@ npm run check
 
 ## UI パック
 
-UI パックは `packs/<id>/` の下にあるフォルダです。
+UI パックはフォルダです。内蔵のパックは `packs/<id>/`、読み込んだパックは `data/packs/<id>/` にあり、同じ id を両方に置くことはできません。
 
 ```
 packs/my-pack/
@@ -75,6 +77,7 @@ packs/my-pack/
 | `version` | はい | このパック自身のバージョン（x.y.z） |
 | `madeWith` | はい | 作成に使った TRM Live UI のバージョン。ライブラリには「vX で作成」と表示されます |
 | `requires` | いいえ | このパックを使える最も低いプログラムのバージョン |
+| `componentApi` | コンポーネントがある場合は推奨 | コンポーネントが必要とするコンポーネント API のバージョン。現在は 1 |
 | `name`、`description` | name は必須 | 文字列、または言語ごとの文字列 |
 | `author` | いいえ | 作者 |
 | `canvas` | はい | キャンバスの幅と高さ |
@@ -153,6 +156,15 @@ packs/my-pack/
 
 `regions` は領域の id、`screens` はシーンの id で分けます。ユーザーの内容は既定の文字に重ねられるため、パックがあとで追加した項目にも自動で既定値が入ります。
 
+### UI パックの共有
+
+パネルで「書き出し」を押すと zip が得られます。自分で圧縮することもできます。pack.json は zip の最上位に置いても、ただ 1 つの最上位フォルダの中に置いてもかまいません。読み込み時の扱いは次のとおりです。
+
+- まず一時フォルダで通常のパックと同じようにすべてチェックし、問題があれば何もインストールしません。
+- パックの外に出るパス（`../` など）、暗号化された zip、分割された zip は受け付けません。
+- 内蔵のパックと同じ id は使えません。読み込み済みのパックと同じ id の場合は置き換えの確認が必要で、古いパックはバックアップされます。
+- コンポーネントスクリプトを含むパックの場合、パネルで注意を表示します。
+
 ## コンポーネント
 
 パックは独自の領域の種類とアニメーションを持てます。コンポーネントスクリプトは ES モジュールで、関数を既定でエクスポートします。
@@ -199,7 +211,7 @@ export default function setup(api) {
 | プログラムのバージョン | `package.json` の `version` | パックは `requires` で最も低いバージョンを示し、`madeWith` で作成時のバージョンを記録します |
 | パック形式 | `server/version.js` の `PACK_FORMAT` | pack.json の構造バージョン |
 | データ形式 | `server/version.js` の `DATA_FORMAT` | ユーザーの内容とプリセットの構造バージョン |
-| コンポーネント API | `public/core/registry.js` の `COMPONENT_API` | コンポーネントスクリプトに渡す api のバージョン |
+| コンポーネント API | `server/version.js` の `COMPONENT_API` | コンポーネントスクリプトに渡す api のバージョン。パックは `componentApi` で必要なバージョンを示します |
 
 バージョンが異なる場合の扱いは次のとおりです。
 
@@ -208,6 +220,7 @@ export default function setup(api) {
 | パックの `format` が対応より新しい | 使えません。先にプログラムを更新するよう表示します |
 | パックの `format` が古い | `PACK_MIGRATIONS` で 1 段ずつ更新してから使います |
 | パックの `requires` がプログラムより高い | 使えません。必要なバージョンを表示します |
+| パックの `componentApi` が対応より高い | 使えません。先にプログラムを更新するよう表示します |
 | パックの `madeWith` のメジャーバージョンが新しい | 使えますが、一部の表示が異なる場合があると表示します |
 | 選んだパックが使えない | 既定のパック、次に使える任意のパックを使います。パネルに理由を表示します |
 | ユーザーデータが古い形式 | `DATA_MIGRATIONS` で 1 段ずつ更新します |
@@ -230,6 +243,10 @@ pack.json またはユーザーデータの構造を変えるときは、次の�
 | GET | `/events` | 全体の状態を送信します（Server-Sent Events） |
 | GET | `/api/state` | 現在の全体の状態 |
 | GET | `/api/packs` | UI ライブラリ |
+| POST | `/api/packs/inspect` | 読み込み前のプレビュー。本文は zip |
+| POST | `/api/packs/import` | パックを読み込みます。本文は zip。`?replace=1` で同じ id の読み込み済みパックを置き換えます |
+| GET | `/api/packs/:id/export` | パックを zip で書き出します |
+| DELETE | `/api/packs/:id` | 読み込んだパックを削除します（data/backups に移動） |
 | GET | `/api/locales` | 使えるパネルの言語 |
 | PUT | `/api/config` | 設定を変更：`{ activePack?, language? }` |
 | PUT | `/api/content` | 文字を保存：`{ regions, screens }` |

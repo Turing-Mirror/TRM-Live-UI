@@ -12,6 +12,8 @@ server/            Local service (Node.js, no third-party dependencies)
   http.js          All endpoints and static files
   state.js         The pack in use, the full state pushed to the overlay and panel, file watching
   packs.js         Reading, migrating, validating and compatibility-checking UI packs
+  packio.js        Importing, exporting and deleting UI packs
+  zip.js           Minimal zip reading and writing (Node's built-in zlib only)
   content.js       Reading, writing and migrating user content
   presets.js       Presets
   config.js        Program settings (config/default.json + data/config.json)
@@ -25,12 +27,12 @@ public/
   overlay/         Overlay skeleton and curtain
   panel/           Control panel
   i18n/            Panel language files; add a file to add a language
-packs/<id>/        UI packs
+packs/<id>/        Built-in UI packs (replaced when the program is updated)
 schema/            JSON Schema for pack.json
 scripts/check.mjs  Checks that must pass before a commit
 test/              Unit tests
 config/default.json Default settings
-data/              User data (not committed)
+data/              User data (not committed). Imported UI packs are in data/packs/<id>/
 ```
 
 ## Commands
@@ -51,7 +53,7 @@ Both `npm test` and `npm run check` must pass before a commit. `check` verifies 
 
 ## UI packs
 
-A UI pack is a folder under `packs/<id>/`:
+A UI pack is a folder. Built-in packs are in `packs/<id>/` and imported packs are in `data/packs/<id>/`. An id cannot appear in both:
 
 ```
 packs/my-pack/
@@ -75,6 +77,7 @@ The full definition is in `schema/pack.schema.json`. Add `"$schema": "../../sche
 | `version` | Yes | Version of this pack, x.y.z |
 | `madeWith` | Yes | TRM Live UI version used to make the pack. The library shows it as "Made with vX" |
 | `requires` | No | Lowest program version that can use the pack |
+| `componentApi` | Recommended with components | Component API version the components need, currently 1 |
 | `name`, `description` | name is required | Text, either a string or one string per language |
 | `author` | No | Author |
 | `canvas` | Yes | Canvas width and height |
@@ -153,6 +156,15 @@ The structure of `content.default.json`:
 
 `regions` is keyed by region id and `screens` by scene id. User content is laid over the defaults, so fields a pack adds later get their default values automatically.
 
+### Sharing UI packs
+
+Click "Export" in the panel to get a zip. You can also zip a pack yourself: pack.json can be at the root of the zip or inside a single top-level folder. On import:
+
+- The pack is first fully checked in a temporary folder. If it has problems, nothing is installed.
+- Paths that leave the pack (such as `../`) and encrypted or split zips are rejected.
+- The id cannot match a built-in pack. If it matches an imported pack, the user must confirm the replacement, and the old pack is backed up.
+- If the pack contains component scripts, the panel warns the user.
+
 ## Components
 
 A pack can bring its own region kinds and animations. A component script is an ES module whose default export is a function:
@@ -199,7 +211,7 @@ A component that fails to load does not break the overlay. The panel shows a not
 | Program version | `version` in `package.json` | Packs declare the lowest version with `requires` and record the version they were made with in `madeWith` |
 | Pack format | `PACK_FORMAT` in `server/version.js` | Structure version of pack.json |
 | Data format | `DATA_FORMAT` in `server/version.js` | Structure version of user content and presets |
-| Component API | `COMPONENT_API` in `public/core/registry.js` | Version of the api given to component scripts |
+| Component API | `COMPONENT_API` in `server/version.js` | Version of the api given to component scripts. Packs declare the version they need with `componentApi` |
 
 How the program handles different versions:
 
@@ -208,6 +220,7 @@ How the program handles different versions:
 | The pack's `format` is newer than supported | Not usable. The user is told to update the program |
 | The pack's `format` is older | Upgraded step by step with `PACK_MIGRATIONS`, then used |
 | The pack's `requires` is higher than the program version | Not usable. The required version is shown |
+| The pack's `componentApi` is higher than supported | Not usable. The user is told to update the program |
 | The major version of the pack's `madeWith` is newer | Usable, with a notice that some effects may differ |
 | The chosen pack is not usable | The default pack is used, then any usable pack. The panel shows the reason |
 | User data is in an older format | Upgraded step by step with `DATA_MIGRATIONS` |
@@ -230,6 +243,10 @@ Every endpoint returns JSON. Errors return `{ "error": { "code", "params" } }`, 
 | GET | `/events` | Pushes the full state (Server-Sent Events) |
 | GET | `/api/state` | The current full state |
 | GET | `/api/packs` | The UI library |
+| POST | `/api/packs/inspect` | Preview before an import. The body is a zip |
+| POST | `/api/packs/import` | Imports a pack. The body is a zip. `?replace=1` replaces an imported pack with the same id |
+| GET | `/api/packs/:id/export` | Exports a pack as a zip |
+| DELETE | `/api/packs/:id` | Deletes an imported pack (moved to data/backups) |
 | GET | `/api/locales` | Available panel languages |
 | PUT | `/api/config` | Changes settings: `{ activePack?, language? }` |
 | PUT | `/api/content` | Saves text: `{ regions, screens }` |
