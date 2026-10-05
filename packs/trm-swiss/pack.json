@@ -1,0 +1,108 @@
+{
+  "$schema": "../../schema/pack.schema.json",
+  "format": 1,
+  "id": "trm-swiss",
+  "version": "1.0.0",
+  "madeWith": "1.0.0",
+  "requires": "1.0.0",
+  "name": {
+    "zh-CN": "图灵镜 · 瑞士",
+    "en-US": "Turing Mirror · Swiss",
+    "ja-JP": "Turing Mirror・スイス"
+  },
+  "description": {
+    "zh-CN": "简洁的瑞士扁平风格，浅色、圆角、带几何小动画。",
+    "en-US": "A clean Swiss flat style with light colors, rounded corners and small geometric animations.",
+    "ja-JP": "明るい色と角丸、小さな幾何学アニメーションを使った、すっきりしたスイス風フラットデザインです。"
+  },
+  "author": "Turing Mirror Software",
+  "canvas": { "width": 1920, "height": 1080 },
+  "fonts": [
+    { "family": "Alibaba PuHuiTi", "weight": 300, "src": "fonts/Alibaba-PuHuiTi-Light.otf" },
+    { "family": "Alibaba PuHuiTi", "weight": 400, "src": "fonts/Alibaba-PuHuiTi-Regular.otf" },
+    { "family": "Alibaba PuHuiTi", "weight": 500, "src": "fonts/Alibaba-PuHuiTi-Medium.otf" },
+    { "family": "Alibaba PuHuiTi", "weight": 700, "src": "fonts/Alibaba-PuHuiTi-Bold.otf" },
+    { "family": "Alibaba PuHuiTi", "weight": 900, "src": "fonts/Alibaba-PuHuiTi-Heavy.otf" },
+    { "family": "Source Han Sans SC", "weight": 400, "src": "fonts/SourceHanSansSC-Regular.otf" },
+    { "family": "Source Han Sans SC", "weight": 500, "src": "fonts/SourceHanSansSC-Medium.otf" },
+    { "family": "Source Han Sans SC", "weight": 700, "src": "fonts/SourceHanSansSC-Bold.otf" }
+  ],
+  "styles": ["style.css"],
+  "components": ["components/animations.js"],
+  "content": "content.default.json",
+  "theme": {
+    "fonts": {
+      "title": "Alibaba PuHuiTi",
+      "body": "Source Han Sans SC"
+    },
+    "radius": 18,
+    "colors": {
+      "backdrop": "#F3F1EC",
+      "panel": "#FFFFFF",
+      "text": "#2E2E33",
+      "muted": "#8C8A93",
+      "accent": "#F5B5C4",
+      "highlight": "#E5869E",
+      "line": "#E6E2DA"
+    },
+    "palette": ["#F5B5C4", "#BFD8F0", "#F6DE9F", "#BEE3CF", "#E5869E"],
+    "sizes": {
+      "title": 40,
+      "subtitle": 32,
+      "heading": 28,
+      "body": 26,
+      "small": 22,
+      "display": 100,
+      "countdown": 96
+    }
+  },
+  "regions": [
+    {
+      "id": "title", "kind": "title", "x": 24, "y": 24, "w": 1000, "h": 88,
+      "label": { "zh-CN": "顶栏左：节目名", "en-US": "Top left: show name", "ja-JP": "上部左：番組名" }
+    },
+    {
+      "id": "status", "kind": "status", "x": 1040, "y": 24, "w": 856, "h": 88,
+      "options": { "clock": true },
+      "label": { "zh-CN": "顶栏右：状态", "en-US": "Top right: status", "ja-JP": "上部右：状態" }
+    },
+    {
+      "id": "capture", "kind": "hole", "x": 24, "y": 128, "w": 1472, "h": 828,
+      "label": { "zh-CN": "OBS 画面", "en-US": "OBS capture", "ja-JP": "OBS 画面" }
+    },
+    {
+      "id": "notice", "kind": "notice", "x": 1512, "y": 128, "w": 384, "h": 928,
+      "options": { "autoHeight": true },
+      "label": { "zh-CN": "右栏：公告", "en-US": "Right: notice", "ja-JP": "右側：お知らせ" }
+    },
+    {
+      "id": "ticker", "kind": "ticker", "x": 24, "y": 972, "w": 1472, "h": 84,
+      "options": { "speed": 90 },
+      "label": { "zh-CN": "底栏：滚动字幕", "en-US": "Bottom: ticker", "ja-JP": "下部：ティッカー" }
+    }
+  ],
+  "scenes": {
+    "curtain": { "x": 24, "y": 128, "w": 1872, "h": 928 },
+    "items": [
+      {
+        "id": "live",
+        "label": { "zh-CN": "直播中", "en-US": "Live", "ja-JP": "配信中" }
+      },
+      {
+        "id": "starting",
+        "label": { "zh-CN": "开播前", "en-US": "Starting soon", "ja-JP": "配信開始前" },
+        "screen": { "kind": "screen", "options": { "animation": "tiles", "reserve": 420 } }
+      },
+      {
+        "id": "brb",
+        "label": { "zh-CN": "稍后回来", "en-US": "Be right back", "ja-JP": "少々お待ちください" },
+        "screen": { "kind": "screen", "options": { "animation": "hop", "reserve": 420 } }
+      },
+      {
+        "id": "ending",
+        "label": { "zh-CN": "即将下播", "en-US": "Ending soon", "ja-JP": "まもなく終了" },
+        "screen": { "kind": "screen", "options": { "animation": "sunset", "reserve": 420 } }
+      }
+    ]
+  }
+}

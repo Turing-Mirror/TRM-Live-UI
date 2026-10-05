@@ -1,38 +1,23 @@
-html, body {
-  background: transparent;
-  overflow: hidden;
-}
-
-#canvas {
-  position: relative;
-}
-
-#backdrop {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-}
+/* 图灵镜 · 瑞士：外观样式。骨架（定位、幕布、切换）在 public/overlay/overlay.css。 */
 
 .region {
-  position: absolute;
   display: flex;
   align-items: center;
   gap: 20px;
   padding: 0 32px;
   background: var(--color-panel);
   border-radius: var(--radius);
-  overflow: hidden;
   white-space: nowrap;
 }
 
 /* 标题类文字用标题字体，其余用正文字体 */
-.badge, .title-main, .status-clock, .notice-heading, .ticker-label {
+.title-badge, .title-main, .status-clock, .notice-heading, .ticker-label,
+.screen-kicker, .screen-heading, .screen-countdown, .sunset-z {
   font-family: var(--font-title), sans-serif;
 }
 
 /* 顶栏左 */
-.badge {
+.title-badge {
   flex: none;
   font-size: var(--size-subtitle);
   font-weight: 900;
@@ -69,7 +54,7 @@ html, body {
   flex-direction: column;
   align-items: stretch;
   gap: 16px;
-  padding: 28px 28px;
+  padding: 28px;
   white-space: normal;
 }
 .notice-heading {
@@ -91,64 +76,30 @@ html, body {
   font-weight: 700;
   color: var(--color-highlight);
 }
-.ticker-viewport {
-  flex: 1;
-  overflow: hidden;
-}
-.ticker-track {
-  display: inline-flex;
-}
 .ticker-item {
   font-size: var(--size-body);
 }
-.ticker-track.scrolling {
-  animation: ticker linear infinite;
-}
-@keyframes ticker {
-  from { transform: translateX(var(--from)); }
-  to { transform: translateX(var(--to)); }
-}
 
-/* 等待画面：切换状态时从左向右展开 */
-.region-screen {
-  z-index: 2;
+/* 等待画面：左侧文字，右侧动画，再往右给 Live2D 模型留出 --reserve */
+.screen-screen {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 500px;
   align-items: center;
   gap: 64px;
   padding: 0 calc(var(--reserve) + 32px) 0 112px;
-  white-space: normal;
-  clip-path: inset(0 100% 0 0 round var(--radius));
-  transition: clip-path 0.7s cubic-bezier(0.7, 0, 0.2, 1);
 }
-.region-screen.is-active {
-  clip-path: inset(0 0 0 0 round var(--radius));
-}
-.region-screen:not(.is-active) * {
-  animation-play-state: paused;
-}
-
 .screen-text {
   display: flex;
   flex-direction: column;
   gap: 20px;
 }
-.screen-text > * {
-  opacity: 0;
-}
-.region-screen.is-active .screen-text > * {
-  animation: rise 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) both;
-  animation-delay: calc(0.45s + var(--i) * 0.1s);
-}
 .screen-kicker {
-  font-family: var(--font-title), sans-serif;
   font-size: var(--size-heading);
   font-weight: 700;
   letter-spacing: 0.16em;
   color: var(--color-highlight);
 }
 .screen-heading {
-  font-family: var(--font-title), sans-serif;
   font-size: var(--size-display);
   font-weight: 900;
   line-height: 1.1;
@@ -159,7 +110,6 @@ html, body {
 }
 .screen-countdown {
   margin-top: 24px;
-  font-family: var(--font-title), sans-serif;
   font-size: var(--size-countdown);
   font-weight: 700;
   line-height: 1;
@@ -172,11 +122,6 @@ html, body {
   align-items: center;
   justify-content: center;
   height: 500px;
-}
-
-@keyframes rise {
-  from { opacity: 0; transform: translateY(24px); }
-  to { opacity: 1; transform: none; }
 }
 
 /* 动画：拼块 */
@@ -302,7 +247,6 @@ html, body {
   position: absolute;
   right: 18%;
   bottom: 48%;
-  font-family: var(--font-title), sans-serif;
   font-size: var(--size);
   font-weight: 900;
   color: var(--color-highlight);

@@ -1,0 +1,42 @@
+{
+  "scene": "live",
+  "regions": {
+    "title": {
+      "badge": "LIVE",
+      "main": "图灵镜",
+      "sub": "第 1 期"
+    },
+    "status": {
+      "text": "直播中"
+    },
+    "notice": {
+      "heading": "公告",
+      "body": ""
+    },
+    "ticker": {
+      "label": "提示",
+      "text": "欢迎来到图灵镜的直播间",
+      "scroll": true
+    }
+  },
+  "screens": {
+    "starting": {
+      "kicker": "STARTING SOON",
+      "heading": "直播马上开始",
+      "sub": "先倒杯水，我们很快见",
+      "time": ""
+    },
+    "brb": {
+      "kicker": "BE RIGHT BACK",
+      "heading": "稍等一下",
+      "sub": "主播去去就回",
+      "time": ""
+    },
+    "ending": {
+      "kicker": "SEE YOU NEXT TIME",
+      "heading": "今天就到这里啦",
+      "sub": "谢谢大家的陪伴",
+      "time": ""
+    }
+  }
+}

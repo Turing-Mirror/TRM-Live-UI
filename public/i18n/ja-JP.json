@@ -1,0 +1,139 @@
+{
+  "locale": {
+    "zh-CN": "简体中文",
+    "en-US": "English",
+    "ja-JP": "日本語"
+  },
+  "server": {
+    "started": "TRM Live UI v{version} を起動しました",
+    "overlay": "配信画面（OBS に追加）",
+    "panel": "コントロールパネル",
+    "portInUse": "ポート {port} は使用中です。起動中の別の TRM Live UI を閉じるか、data/config.json で別のポートを指定してください。",
+    "noPack": "使える UI パックがありません。packs フォルダを確認してください。",
+    "fallback": "UI パック「{wanted}」は使えないため、「{used}」を使います。",
+    "migrated": "古いデータを {file} に移しました"
+  },
+  "language": {
+    "label": "言語"
+  },
+  "connection": {
+    "online": "接続中",
+    "offline": "未接続、再接続しています"
+  },
+  "publish": {
+    "button": "配信に反映",
+    "hint": "Ctrl + Enter",
+    "pending": "未反映の変更があります",
+    "done": "{time} に反映しました"
+  },
+  "banner": {
+    "noPack": "使える UI パックがありません。packs フォルダを確認してください。",
+    "fallback": "UI パック「{id}」は使えないため、既定のパックを使っています。"
+  },
+  "scenes": {
+    "title": "シーン",
+    "hint": "押すとすぐに反映されます。",
+    "switched": "「{name}」に切り替えました"
+  },
+  "presets": {
+    "title": "プリセット",
+    "empty": "プリセットはまだありません",
+    "namePlaceholder": "プリセット名",
+    "save": "保存",
+    "load": "読み込み",
+    "remove": "削除",
+    "saved": "プリセット「{name}」を保存しました",
+    "loaded": "「{name}」を読み込みました。「配信に反映」を押すと表示されます",
+    "removed": "プリセット「{name}」を削除しました",
+    "confirmRemove": "プリセット「{name}」を削除しますか？",
+    "needName": "先にプリセット名を入力してください"
+  },
+  "packs": {
+    "title": "UI ライブラリ",
+    "madeWith": "TRM Live UI v{version} で作成",
+    "active": "使用中",
+    "use": "使う",
+    "confirmUse": "「{name}」に切り替えますか？配信画面がすぐにこの UI に変わります。",
+    "confirmDiscard": "未反映の変更があります。UI を切り替えると変更は失われます。続けますか？"
+  },
+  "preview": {
+    "title": "ライブプレビュー"
+  },
+  "sections": {
+    "regions": "配信画面",
+    "screens": "待機画面"
+  },
+  "form": {
+    "noFields": "ここで編集できる項目はありません。"
+  },
+  "kind": {
+    "title": {
+      "badge": "バッジ",
+      "main": "番組名",
+      "sub": "今回のタイトル"
+    },
+    "status": {
+      "text": "状態の文字"
+    },
+    "notice": {
+      "heading": "見出し",
+      "body": "本文"
+    },
+    "ticker": {
+      "label": "ラベル",
+      "text": "流れる文字",
+      "scroll": "流す"
+    },
+    "screen": {
+      "kicker": "小見出し",
+      "heading": "見出し",
+      "sub": "説明",
+      "time": "カウントダウンの時刻（空欄可）"
+    }
+  },
+  "error": {
+    "internal": "問題が発生しました：{message}",
+    "request": {
+      "offline": "ローカルサービスに接続できません。起動しているか確認してください。",
+      "failed": "リクエストに失敗しました（{status}）。",
+      "notFound": "このエンドポイントはありません。",
+      "tooLarge": "内容が大きすぎます。",
+      "invalidJson": "内容の形式が正しくありません。"
+    },
+    "config": {
+      "unknownKey": "設定「{key}」は変更できません。",
+      "invalidValue": "設定「{key}」の値が正しくありません。"
+    },
+    "content": {
+      "invalid": "内容の形式が正しくありません。"
+    },
+    "scene": {
+      "unknown": "シーン「{scene}」はありません。"
+    },
+    "preset": {
+      "invalidName": "プリセット名は空欄にできず、80 文字以内で、\\ / : * ? \" < > | を含められません。",
+      "notFound": "プリセット「{name}」が見つかりません。"
+    },
+    "kind": {
+      "unknown": "現在の UI パックには「{kind}」というコンポーネントがないため、この項目は表示されません。"
+    },
+    "pack": {
+      "missingField": "pack.json に {field} がありません。",
+      "invalidField": "pack.json の {field} が正しくありません。",
+      "idMismatch": "pack.json の id「{id}」がフォルダ名「{folder}」と一致しません。",
+      "duplicateId": "id「{id}」が重複しています。",
+      "fileMissing": "ファイル {file} が見つかりません。",
+      "formatTooNew": "この UI パックの形式（{format}）は対応している形式（{supported}）より新しいため、先に TRM Live UI を更新してください。",
+      "formatTooOld": "この UI パックの形式（{format}）は古すぎます。対応している最も古い形式は {supported} です。",
+      "requiresEngine": "この UI パックには TRM Live UI v{required} 以降が必要です。現在は v{engine} です。",
+      "madeWithNewer": "この UI パックはより新しい v{madeWith} で作られています。現在は v{engine} のため、一部の表示が異なる場合があります。",
+      "unreadable": "UI パックを読み込めません：{message}",
+      "noneUsable": "使える UI パックがありません。",
+      "notFound": "UI パック「{id}」が見つかりません。",
+      "unusable": "UI パック「{id}」は使えません。",
+      "fontFailed": "フォント {file} を読み込めませんでした。",
+      "styleFailed": "スタイル {file} を読み込めませんでした。",
+      "componentFailed": "コンポーネント {file} を読み込めませんでした：{message}"
+    }
+  }
+}

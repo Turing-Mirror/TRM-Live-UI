@@ -1,0 +1,9 @@
+{
+  "server": {
+    "host": "127.0.0.1",
+    "port": 5170
+  },
+  "defaultPack": "trm-swiss",
+  "activePack": "trm-swiss",
+  "language": "zh-CN"
+}

@@ -3,35 +3,71 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>直播控制面板</title>
-  <link rel="stylesheet" href="/css/base.css">
-  <link rel="stylesheet" href="/css/panel.css">
+  <title>TRM Live UI</title>
+  <link rel="stylesheet" href="/panel/panel.css">
 </head>
 <body>
-  <header class="header">
-    <h1 class="header-title">直播控制面板</h1>
-    <span class="header-status" id="status"></span>
-    <button class="button" type="submit" form="form" title="Ctrl + Enter">更新到直播</button>
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-name">TRM Live UI</span>
+      <span class="tag" id="engine-version"></span>
+    </div>
+    <span class="topbar-pack" id="pack-name"></span>
+    <span class="spacer"></span>
+    <span class="connection" id="connection"></span>
+    <label class="select-wrap">
+      <span class="visually-hidden" data-i18n="language.label"></span>
+      <select class="select" id="language"></select>
+    </label>
+    <span class="save-state" id="save-state"></span>
+    <button class="btn btn-primary" id="publish" type="button" data-i18n="publish.button" data-i18n-title="publish.hint"></button>
   </header>
-  <main class="main">
-    <section class="card">
-      <h2 class="card-title">状态</h2>
-      <div class="scene-row" id="scene-list"></div>
-    </section>
-    <section class="card presets">
-      <h2 class="card-title">预设</h2>
-      <div class="presets-row">
-        <select class="input" id="preset-list"></select>
-        <button class="button button-plain" type="button" id="preset-load">载入</button>
-        <button class="button button-plain" type="button" id="preset-remove">删除</button>
-      </div>
-      <div class="presets-row">
-        <input class="input" type="text" id="preset-name" placeholder="预设名称">
-        <button class="button button-plain" type="button" id="preset-save">保存当前内容</button>
-      </div>
-    </section>
-    <form id="form"></form>
-  </main>
-  <script type="module" src="/js/panel.js"></script>
+
+  <div class="banners" id="banners"></div>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <section class="block">
+        <h2 class="block-title" data-i18n="scenes.title"></h2>
+        <div class="scene-list" id="scenes"></div>
+        <p class="help" data-i18n="scenes.hint"></p>
+      </section>
+
+      <section class="block">
+        <h2 class="block-title" data-i18n="presets.title"></h2>
+        <div class="list" id="presets"></div>
+        <form class="inline-form" id="preset-form">
+          <input class="input" id="preset-name" type="text" maxlength="80" data-i18n-placeholder="presets.namePlaceholder">
+          <button class="btn" type="submit" data-i18n="presets.save"></button>
+        </form>
+      </section>
+
+      <section class="block">
+        <h2 class="block-title" data-i18n="packs.title"></h2>
+        <div class="list" id="packs"></div>
+      </section>
+    </aside>
+
+    <main class="main">
+      <section class="block">
+        <h2 class="block-title" data-i18n="preview.title"></h2>
+        <div class="preview" id="preview">
+          <iframe src="/overlay?preview=1" title="preview" tabindex="-1"></iframe>
+        </div>
+      </section>
+
+      <section class="block">
+        <h2 class="block-title" data-i18n="sections.regions"></h2>
+        <div class="card-grid" id="regions"></div>
+      </section>
+
+      <section class="block" id="screens-block">
+        <h2 class="block-title" data-i18n="sections.screens"></h2>
+        <div class="card-grid" id="screens"></div>
+      </section>
+    </main>
+  </div>
+
+  <script type="module" src="/panel/panel.js"></script>
 </body>
 </html>

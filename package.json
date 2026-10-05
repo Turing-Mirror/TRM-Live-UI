@@ -3,8 +3,14 @@
   "version": "1.0.0",
   "private": true,
   "license": "MIT",
-  "description": "TRM-Live-UI",
+  "description": "TRM Live UI",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
-    "start": "node server.js"
+    "start": "node server/index.js",
+    "check": "node scripts/check.mjs",
+    "test": "node --test \"test/*.test.js\""
   }
 }

@@ -1,0 +1,139 @@
+{
+  "locale": {
+    "zh-CN": "简体中文",
+    "en-US": "English",
+    "ja-JP": "日本語"
+  },
+  "server": {
+    "started": "TRM Live UI v{version} 已启动",
+    "overlay": "直播画面（放进 OBS）",
+    "panel": "控制面板",
+    "portInUse": "端口 {port} 已被占用。请先关闭另一个正在运行的 TRM Live UI，或在 data/config.json 里换一个端口。",
+    "noPack": "没有可以使用的 UI 包，请检查 packs 文件夹。",
+    "fallback": "UI 包“{wanted}”无法使用，已改用“{used}”。",
+    "migrated": "已把旧数据搬到 {file}"
+  },
+  "language": {
+    "label": "语言"
+  },
+  "connection": {
+    "online": "已连接",
+    "offline": "未连接，正在重试"
+  },
+  "publish": {
+    "button": "更新到直播",
+    "hint": "Ctrl + Enter",
+    "pending": "有改动，尚未更新",
+    "done": "已更新 {time}"
+  },
+  "banner": {
+    "noPack": "没有可以使用的 UI 包，请检查 packs 文件夹。",
+    "fallback": "UI 包“{id}”无法使用，已改用默认界面。"
+  },
+  "scenes": {
+    "title": "状态",
+    "hint": "点一下立即生效。",
+    "switched": "已切换到“{name}”"
+  },
+  "presets": {
+    "title": "预设",
+    "empty": "还没有预设",
+    "namePlaceholder": "预设名称",
+    "save": "保存",
+    "load": "载入",
+    "remove": "删除",
+    "saved": "已保存预设“{name}”",
+    "loaded": "已载入“{name}”，点击更新到直播后生效",
+    "removed": "已删除预设“{name}”",
+    "confirmRemove": "删除预设“{name}”？",
+    "needName": "请先填写预设名称"
+  },
+  "packs": {
+    "title": "界面库",
+    "madeWith": "在 TRM Live UI v{version} 制作",
+    "active": "使用中",
+    "use": "使用",
+    "confirmUse": "改用“{name}”？直播画面会马上换成这套界面。",
+    "confirmDiscard": "有改动尚未更新，切换界面会丢掉这些改动。继续吗？"
+  },
+  "preview": {
+    "title": "实时预览"
+  },
+  "sections": {
+    "regions": "直播画面",
+    "screens": "等待画面"
+  },
+  "form": {
+    "noFields": "这一项没有可以修改的内容。"
+  },
+  "kind": {
+    "title": {
+      "badge": "角标",
+      "main": "节目名",
+      "sub": "本期标题"
+    },
+    "status": {
+      "text": "状态文字"
+    },
+    "notice": {
+      "heading": "标题",
+      "body": "内容"
+    },
+    "ticker": {
+      "label": "标签",
+      "text": "字幕内容",
+      "scroll": "滚动"
+    },
+    "screen": {
+      "kicker": "小标题",
+      "heading": "大标题",
+      "sub": "说明",
+      "time": "倒计时到（可留空）"
+    }
+  },
+  "error": {
+    "internal": "出现了未知问题：{message}",
+    "request": {
+      "offline": "连不上本地服务，请确认它正在运行。",
+      "failed": "请求失败（{status}）。",
+      "notFound": "找不到这个接口。",
+      "tooLarge": "内容太大。",
+      "invalidJson": "内容格式有误。"
+    },
+    "config": {
+      "unknownKey": "不能修改设置“{key}”。",
+      "invalidValue": "设置“{key}”的值无效。"
+    },
+    "content": {
+      "invalid": "内容格式有误。"
+    },
+    "scene": {
+      "unknown": "没有“{scene}”这个状态。"
+    },
+    "preset": {
+      "invalidName": "预设名称不能为空，不能超过 80 个字，也不能包含 \\ / : * ? \" < > |",
+      "notFound": "找不到预设“{name}”。"
+    },
+    "kind": {
+      "unknown": "当前 UI 包里没有“{kind}”这种组件，这一项不会显示。"
+    },
+    "pack": {
+      "missingField": "pack.json 缺少 {field}。",
+      "invalidField": "pack.json 里的 {field} 无效。",
+      "idMismatch": "pack.json 里的 id“{id}”和文件夹名“{folder}”不一致。",
+      "duplicateId": "id“{id}”重复了。",
+      "fileMissing": "找不到文件 {file}。",
+      "formatTooNew": "这个 UI 包的格式（{format}）比当前程序支持的（{supported}）新，请先更新 TRM Live UI。",
+      "formatTooOld": "这个 UI 包的格式（{format}）太旧，当前程序最低支持 {supported}。",
+      "requiresEngine": "这个 UI 包需要 TRM Live UI v{required} 或更新版本，当前是 v{engine}。",
+      "madeWithNewer": "这个 UI 包在更新的 v{madeWith} 制作，当前是 v{engine}，部分效果可能不一样。",
+      "unreadable": "无法读取 UI 包：{message}",
+      "noneUsable": "没有可以使用的 UI 包。",
+      "notFound": "找不到 UI 包“{id}”。",
+      "unusable": "UI 包“{id}”无法使用。",
+      "fontFailed": "字体 {file} 载入失败。",
+      "styleFailed": "样式 {file} 载入失败。",
+      "componentFailed": "组件 {file} 载入失败：{message}"
+    }
+  }
+}

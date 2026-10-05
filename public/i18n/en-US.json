@@ -1,0 +1,139 @@
+{
+  "locale": {
+    "zh-CN": "简体中文",
+    "en-US": "English",
+    "ja-JP": "日本語"
+  },
+  "server": {
+    "started": "TRM Live UI v{version} is running",
+    "overlay": "Overlay (add to OBS)",
+    "panel": "Control panel",
+    "portInUse": "Port {port} is in use. Close the other running TRM Live UI, or set another port in data/config.json.",
+    "noPack": "No usable UI pack. Check the packs folder.",
+    "fallback": "UI pack \"{wanted}\" cannot be used. Using \"{used}\" instead.",
+    "migrated": "Moved old data to {file}"
+  },
+  "language": {
+    "label": "Language"
+  },
+  "connection": {
+    "online": "Connected",
+    "offline": "Disconnected, retrying"
+  },
+  "publish": {
+    "button": "Update",
+    "hint": "Ctrl + Enter",
+    "pending": "Unpublished changes",
+    "done": "Updated at {time}"
+  },
+  "banner": {
+    "noPack": "No usable UI pack. Check the packs folder.",
+    "fallback": "UI pack \"{id}\" cannot be used. The default pack is in use."
+  },
+  "scenes": {
+    "title": "Scenes",
+    "hint": "A click takes effect at once.",
+    "switched": "Switched to \"{name}\""
+  },
+  "presets": {
+    "title": "Presets",
+    "empty": "No presets yet",
+    "namePlaceholder": "Preset name",
+    "save": "Save",
+    "load": "Load",
+    "remove": "Delete",
+    "saved": "Saved preset \"{name}\"",
+    "loaded": "Loaded \"{name}\". Click Update to show it.",
+    "removed": "Deleted preset \"{name}\"",
+    "confirmRemove": "Delete preset \"{name}\"?",
+    "needName": "Enter a preset name first"
+  },
+  "packs": {
+    "title": "UI library",
+    "madeWith": "Made with TRM Live UI v{version}",
+    "active": "In use",
+    "use": "Use",
+    "confirmUse": "Switch to \"{name}\"? The overlay changes to this UI at once.",
+    "confirmDiscard": "You have unpublished changes. Switching the UI discards them. Continue?"
+  },
+  "preview": {
+    "title": "Live preview"
+  },
+  "sections": {
+    "regions": "Overlay",
+    "screens": "Waiting screens"
+  },
+  "form": {
+    "noFields": "Nothing to edit here."
+  },
+  "kind": {
+    "title": {
+      "badge": "Badge",
+      "main": "Show name",
+      "sub": "Episode title"
+    },
+    "status": {
+      "text": "Status text"
+    },
+    "notice": {
+      "heading": "Heading",
+      "body": "Text"
+    },
+    "ticker": {
+      "label": "Label",
+      "text": "Ticker text",
+      "scroll": "Scroll"
+    },
+    "screen": {
+      "kicker": "Kicker",
+      "heading": "Heading",
+      "sub": "Subtitle",
+      "time": "Count down to (optional)"
+    }
+  },
+  "error": {
+    "internal": "Something went wrong: {message}",
+    "request": {
+      "offline": "Cannot reach the local service. Make sure it is running.",
+      "failed": "The request failed ({status}).",
+      "notFound": "This endpoint does not exist.",
+      "tooLarge": "The content is too large.",
+      "invalidJson": "The content is not valid."
+    },
+    "config": {
+      "unknownKey": "The setting \"{key}\" cannot be changed.",
+      "invalidValue": "The value for \"{key}\" is not valid."
+    },
+    "content": {
+      "invalid": "The content is not valid."
+    },
+    "scene": {
+      "unknown": "There is no scene \"{scene}\"."
+    },
+    "preset": {
+      "invalidName": "A preset name must not be empty, must be at most 80 characters, and must not contain \\ / : * ? \" < > |",
+      "notFound": "Preset \"{name}\" was not found."
+    },
+    "kind": {
+      "unknown": "The current UI pack has no \"{kind}\" component, so this item is not shown."
+    },
+    "pack": {
+      "missingField": "pack.json is missing {field}.",
+      "invalidField": "{field} in pack.json is not valid.",
+      "idMismatch": "The id \"{id}\" in pack.json does not match the folder name \"{folder}\".",
+      "duplicateId": "The id \"{id}\" is used more than once.",
+      "fileMissing": "The file {file} was not found.",
+      "formatTooNew": "This UI pack uses format {format}, which is newer than the supported format {supported}. Update TRM Live UI first.",
+      "formatTooOld": "This UI pack uses format {format}, which is too old. The oldest supported format is {supported}.",
+      "requiresEngine": "This UI pack needs TRM Live UI v{required} or later. This is v{engine}.",
+      "madeWithNewer": "This UI pack was made with the newer v{madeWith}. This is v{engine}, so some effects may differ.",
+      "unreadable": "The UI pack cannot be read: {message}",
+      "noneUsable": "No usable UI pack.",
+      "notFound": "UI pack \"{id}\" was not found.",
+      "unusable": "UI pack \"{id}\" cannot be used.",
+      "fontFailed": "The font {file} failed to load.",
+      "styleFailed": "The style {file} failed to load.",
+      "componentFailed": "The component {file} failed to load: {message}"
+    }
+  }
+}

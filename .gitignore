@@ -1,7 +1,10 @@
 node_modules/
 *.log
 
-# 个人内容和预设，只留在本机
+# 用户数据：个人内容、预设、设置、备份，只留在本机
+data/
+
+# v1 之前的旧位置，启动时会自动搬到 data/
 config/content.json
 config/presets/
 
