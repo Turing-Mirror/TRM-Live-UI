@@ -41,7 +41,8 @@ export const kinds = {
       { key: 'body', label: '内容', type: 'textarea' },
     ],
     render(el, data) {
-      el.append(h('div', 'notice-heading', data.heading ?? ''), h('div', 'notice-body', data.body ?? ''));
+      el.append(h('div', 'notice-heading', data.heading ?? ''));
+      if (data.body) el.append(h('div', 'notice-body', data.body));
     },
   },
 

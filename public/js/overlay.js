@@ -42,6 +42,11 @@ function buildLayout(settings) {
       width: `${region.w}px`,
       height: `${region.h}px`,
     });
+    // 高度跟随内容，h 作为最大高度
+    if (region.options?.autoHeight) {
+      el.style.height = 'auto';
+      el.style.maxHeight = `${region.h}px`;
+    }
     canvas.append(el);
   }
 }
