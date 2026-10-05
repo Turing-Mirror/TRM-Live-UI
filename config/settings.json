@@ -1,0 +1,43 @@
+{
+  "server": {
+    "host": "127.0.0.1",
+    "port": 5170
+  },
+  "canvas": {
+    "width": 1920,
+    "height": 1080
+  },
+  "theme": {
+    "font": "Alibaba PuHuiTi",
+    "radius": 18,
+    "colors": {
+      "backdrop": "#F3F1EC",
+      "panel": "#FFFFFF",
+      "text": "#2E2E33",
+      "muted": "#8C8A93",
+      "accent": "#F5B5C4",
+      "accentSoft": "#FCE9EE",
+      "stage": "#E3EEF8",
+      "line": "#E6E2DA"
+    },
+    "sizes": {
+      "title": 40,
+      "subtitle": 32,
+      "heading": 28,
+      "body": 26,
+      "small": 22
+    }
+  },
+  "ticker": {
+    "speed": 90,
+    "gap": 160
+  },
+  "regions": [
+    { "id": "title",   "kind": "title",  "label": "顶栏左：节目名", "x": 24,   "y": 24,  "w": 1000, "h": 88 },
+    { "id": "status",  "kind": "status", "label": "顶栏右：状态",   "x": 1040, "y": 24,  "w": 856,  "h": 88, "options": { "clock": true } },
+    { "id": "capture", "kind": "hole",   "label": "OBS 画面",       "x": 24,   "y": 128, "w": 1472, "h": 828 },
+    { "id": "notice",  "kind": "notice", "label": "右栏：公告",     "x": 1512, "y": 128, "w": 384,  "h": 392 },
+    { "id": "stage",   "kind": "stage",  "label": "右下：Live2D",   "x": 1512, "y": 536, "w": 384,  "h": 520 },
+    { "id": "ticker",  "kind": "ticker", "label": "底栏：滚动字幕", "x": 24,   "y": 972, "w": 1472, "h": 84 }
+  ]
+}

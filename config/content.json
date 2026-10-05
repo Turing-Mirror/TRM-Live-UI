@@ -1,0 +1,22 @@
+{
+  "title": {
+    "badge": "LIVE",
+    "main": "图灵镜",
+    "sub": "第 1 期"
+  },
+  "status": {
+    "text": "直播中"
+  },
+  "notice": {
+    "heading": "公告",
+    "body": ""
+  },
+  "stage": {
+    "label": ""
+  },
+  "ticker": {
+    "label": "提示",
+    "text": "欢迎来到图灵镜的直播间",
+    "scroll": true
+  }
+}

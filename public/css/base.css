@@ -1,0 +1,27 @@
+@font-face { font-family: 'Alibaba PuHuiTi'; font-weight: 300; src: url('/fonts/Alibaba-PuHuiTi-Light.otf') format('opentype'); }
+@font-face { font-family: 'Alibaba PuHuiTi'; font-weight: 400; src: url('/fonts/Alibaba-PuHuiTi-Regular.otf') format('opentype'); }
+@font-face { font-family: 'Alibaba PuHuiTi'; font-weight: 500; src: url('/fonts/Alibaba-PuHuiTi-Medium.otf') format('opentype'); }
+@font-face { font-family: 'Alibaba PuHuiTi'; font-weight: 700; src: url('/fonts/Alibaba-PuHuiTi-Bold.otf') format('opentype'); }
+@font-face { font-family: 'Alibaba PuHuiTi'; font-weight: 900; src: url('/fonts/Alibaba-PuHuiTi-Heavy.otf') format('opentype'); }
+
+/* 默认值，运行时会被 config/settings.json 的 theme 覆盖 */
+:root {
+  --font: 'Alibaba PuHuiTi';
+  --radius: 18px;
+  --color-backdrop: #F3F1EC;
+  --color-panel: #FFFFFF;
+  --color-text: #2E2E33;
+  --color-muted: #8C8A93;
+  --color-accent: #F5B5C4;
+  --color-accentSoft: #FCE9EE;
+  --color-stage: #E3EEF8;
+  --color-line: #E6E2DA;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: var(--font), sans-serif;
+  color: var(--color-text);
+}
