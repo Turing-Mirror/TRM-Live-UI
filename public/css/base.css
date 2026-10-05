@@ -3,10 +3,14 @@
 @font-face { font-family: 'Alibaba PuHuiTi'; font-weight: 500; src: url('/fonts/Alibaba-PuHuiTi-Medium.otf') format('opentype'); }
 @font-face { font-family: 'Alibaba PuHuiTi'; font-weight: 700; src: url('/fonts/Alibaba-PuHuiTi-Bold.otf') format('opentype'); }
 @font-face { font-family: 'Alibaba PuHuiTi'; font-weight: 900; src: url('/fonts/Alibaba-PuHuiTi-Heavy.otf') format('opentype'); }
+@font-face { font-family: 'Source Han Sans SC'; font-weight: 400; src: url('/fonts/SourceHanSansSC-Regular.otf') format('opentype'); }
+@font-face { font-family: 'Source Han Sans SC'; font-weight: 500; src: url('/fonts/SourceHanSansSC-Medium.otf') format('opentype'); }
+@font-face { font-family: 'Source Han Sans SC'; font-weight: 700; src: url('/fonts/SourceHanSansSC-Bold.otf') format('opentype'); }
 
 /* 默认值，运行时会被 config/settings.json 的 theme 覆盖 */
 :root {
-  --font: 'Alibaba PuHuiTi';
+  --font-title: 'Alibaba PuHuiTi';
+  --font-body: 'Source Han Sans SC';
   --radius: 18px;
   --color-backdrop: #F3F1EC;
   --color-panel: #FFFFFF;
@@ -21,6 +25,6 @@
 
 body {
   margin: 0;
-  font-family: var(--font), sans-serif;
+  font-family: var(--font-body), sans-serif;
   color: var(--color-text);
 }

@@ -26,6 +26,11 @@ html, body {
   white-space: nowrap;
 }
 
+/* 标题类文字用标题字体，其余用正文字体 */
+.badge, .title-main, .status-clock, .notice-heading, .ticker-label {
+  font-family: var(--font-title), sans-serif;
+}
+
 /* 顶栏左 */
 .badge {
   flex: none;

@@ -16,7 +16,9 @@ export async function saveContent(content) {
 
 // 把 settings.theme 写成 CSS 变量
 export function applyTheme(theme, root = document.documentElement) {
-  root.style.setProperty('--font', `'${theme.font}'`);
+  for (const [name, value] of Object.entries(theme.fonts)) {
+    root.style.setProperty(`--font-${name}`, `'${value}'`);
+  }
   root.style.setProperty('--radius', `${theme.radius}px`);
   for (const [name, value] of Object.entries(theme.colors)) {
     root.style.setProperty(`--color-${name}`, value);

@@ -8,7 +8,10 @@
     "height": 1080
   },
   "theme": {
-    "font": "Alibaba PuHuiTi",
+    "fonts": {
+      "title": "Alibaba PuHuiTi",
+      "body": "Source Han Sans SC"
+    },
     "radius": 18,
     "colors": {
       "backdrop": "#F3F1EC",
