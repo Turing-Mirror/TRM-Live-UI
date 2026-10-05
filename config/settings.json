@@ -22,22 +22,34 @@
       "highlight": "#E5869E",
       "line": "#E6E2DA"
     },
+    "palette": ["#F5B5C4", "#BFD8F0", "#F6DE9F", "#BEE3CF", "#E5869E"],
     "sizes": {
       "title": 40,
       "subtitle": 32,
       "heading": 28,
       "body": 26,
-      "small": 22
+      "small": 22,
+      "display": 100,
+      "countdown": 96
     }
   },
   "ticker": {
     "speed": 90
   },
+  "scenes": [
+    { "id": "live",     "label": "直播中" },
+    { "id": "starting", "label": "开播前" },
+    { "id": "brb",      "label": "稍后回来" },
+    { "id": "ending",   "label": "即将下播" }
+  ],
   "regions": [
     { "id": "title",   "kind": "title",  "label": "顶栏左：节目名", "x": 24,   "y": 24,  "w": 1000, "h": 88 },
     { "id": "status",  "kind": "status", "label": "顶栏右：状态",   "x": 1040, "y": 24,  "w": 856,  "h": 88, "options": { "clock": true } },
     { "id": "capture", "kind": "hole",   "label": "OBS 画面",       "x": 24,   "y": 128, "w": 1472, "h": 828 },
     { "id": "notice",  "kind": "notice", "label": "右栏：公告",     "x": 1512, "y": 128, "w": 384,  "h": 928, "options": { "autoHeight": true } },
-    { "id": "ticker",  "kind": "ticker", "label": "底栏：滚动字幕", "x": 24,   "y": 972, "w": 1472, "h": 84 }
+    { "id": "ticker",  "kind": "ticker", "label": "底栏：滚动字幕", "x": 24,   "y": 972, "w": 1472, "h": 84 },
+    { "id": "starting", "kind": "screen", "label": "开播前画面",   "x": 24,   "y": 128, "w": 1872, "h": 928, "options": { "scene": "starting", "animation": "tiles",  "reserve": 420 } },
+    { "id": "brb",      "kind": "screen", "label": "稍后回来画面", "x": 24,   "y": 128, "w": 1872, "h": 928, "options": { "scene": "brb",      "animation": "hop",    "reserve": 420 } },
+    { "id": "ending",   "kind": "screen", "label": "即将下播画面", "x": 24,   "y": 128, "w": 1872, "h": 928, "options": { "scene": "ending",   "animation": "sunset", "reserve": 420 } }
   ]
 }

@@ -1,6 +1,7 @@
 // 区域类型：fields 决定控制面板里能改什么，render 决定直播画面怎么画
 // 新增一种区域时，在这里加一项，再到 config/settings.json 的 regions 里引用它
 import { h } from './live.js';
+import { animations } from './animations.js';
 
 export const kinds = {
   // 镂空区域，透出 OBS 里的画面
@@ -43,6 +44,38 @@ export const kinds = {
     render(el, data) {
       el.append(h('div', 'notice-heading', data.heading ?? ''));
       if (data.body) el.append(h('div', 'notice-body', data.body));
+    },
+  },
+
+  // 等待画面：开播前、稍后回来、即将下播等，切换到对应状态时盖住中间区域
+  screen: {
+    fields: [
+      { key: 'kicker', label: '小标题' },
+      { key: 'heading', label: '大标题' },
+      { key: 'sub', label: '说明' },
+      { key: 'time', label: '倒计时到（如 21:00，可留空）' },
+    ],
+    render(el, data, region) {
+      const { animation, reserve = 0 } = region.options ?? {};
+      el.style.setProperty('--reserve', `${reserve}px`);
+      const text = h('div', 'screen-text');
+      const items = [
+        data.kicker && h('div', 'screen-kicker', data.kicker),
+        data.heading && h('div', 'screen-heading', data.heading),
+        data.sub && h('div', 'screen-sub', data.sub),
+      ];
+      if (data.time) {
+        const countdown = h('div', 'screen-countdown');
+        countdown.dataset.countdown = data.time;
+        items.push(countdown);
+      }
+      items.filter(Boolean).forEach((item, i) => {
+        item.style.setProperty('--i', i);
+        text.append(item);
+      });
+      const stage = h('div', 'screen-stage');
+      animations[animation]?.(stage);
+      el.append(text, stage);
     },
   },
 

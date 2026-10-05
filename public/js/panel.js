@@ -69,6 +69,26 @@ async function publish(event) {
   }
 }
 
+// 状态切换：点一下立即生效，不影响下方未更新的改动
+const sceneList = document.getElementById('scene-list');
+
+function buildScenes() {
+  const current = state.content.scene ?? state.settings.scenes?.[0]?.id;
+  sceneList.replaceChildren(...(state.settings.scenes ?? []).map((scene) => {
+    const button = h('button', `scene-button ${scene.id === current ? 'is-active' : ''}`, scene.label);
+    button.type = 'button';
+    button.addEventListener('click', async () => {
+      try {
+        await saveContent({ ...state.content, scene: scene.id });
+        setStatus(`已切换到“${scene.label}”`);
+      } catch (err) {
+        setStatus(`切换失败：${err.message}`);
+      }
+    });
+    return button;
+  }));
+}
+
 // 预设
 const presetList = document.getElementById('preset-list');
 const presetName = document.getElementById('preset-name');
@@ -104,7 +124,8 @@ document.getElementById('preset-save').addEventListener('click', () => runPreset
 document.getElementById('preset-load').addEventListener('click', () => runPreset(async () => {
   if (presetList.disabled) return;
   const name = presetList.value;
-  state = { ...state, content: await presets.load(name) };
+  // 载入预设不改变当前状态
+  state = { ...state, content: { ...(await presets.load(name)), scene: state.content.scene } };
   build();
   dirty = true;
   presetName.value = name;
@@ -133,5 +154,6 @@ document.addEventListener('keydown', (event) => {
 
 subscribe((next) => {
   state = next;
+  buildScenes();
   if (!dirty) build();
 });

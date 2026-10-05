@@ -69,13 +69,39 @@ function render({ settings, content }) {
     el.replaceChildren();
     kind.render(el, data, region, settings);
   }
-  tickClock();
+  // 只显示当前状态对应的等待画面
+  for (const region of settings.regions) {
+    if (!region.options?.scene) continue;
+    document.getElementById(`region-${region.id}`)
+      ?.classList.toggle('is-active', content.scene === region.options.scene);
+  }
+  tick();
 }
 
-function tickClock() {
+const pad = (n) => String(n).padStart(2, '0');
+
+// "21:00" 到现在的剩余时间；目标早于现在超过半天时算作第二天
+function formatCountdown(target) {
+  const [hours, minutes] = target.split(/[:：]/).map(Number);
+  if (Number.isNaN(hours) || Number.isNaN(minutes)) return '';
+  const end = new Date();
+  end.setHours(hours, minutes, 0, 0);
+  let seconds = Math.ceil((end - Date.now()) / 1000);
+  if (seconds < -12 * 3600) seconds += 24 * 3600;
+  if (seconds <= 0) return '00:00';
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  const s = seconds % 60;
+  return h ? `${h}:${pad(m)}:${pad(s)}` : `${pad(m)}:${pad(s)}`;
+}
+
+function tick() {
   const time = new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit', hour12: false });
   document.querySelectorAll('[data-clock]').forEach((el) => { el.textContent = time; });
+  document.querySelectorAll('[data-countdown]').forEach((el) => {
+    el.textContent = formatCountdown(el.dataset.countdown);
+  });
 }
 
-setInterval(tickClock, 1000);
+setInterval(tick, 1000);
 document.fonts.ready.then(() => subscribe(render));

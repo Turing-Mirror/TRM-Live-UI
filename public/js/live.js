@@ -39,6 +39,9 @@ export function applyTheme(theme, root = document.documentElement) {
   for (const [name, value] of Object.entries(theme.colors)) {
     root.style.setProperty(`--color-${name}`, value);
   }
+  const palette = theme.palette ?? [];
+  palette.forEach((value, i) => root.style.setProperty(`--palette-${i}`, value));
+  root.style.setProperty('--palette-count', palette.length);
   for (const [name, value] of Object.entries(theme.sizes)) {
     root.style.setProperty(`--size-${name}`, `${value}px`);
   }

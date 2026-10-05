@@ -1,4 +1,5 @@
 {
+  "scene": "live",
   "title": {
     "badge": "Kara251",
     "main": "图灵镜",
@@ -15,5 +16,23 @@
     "label": "提示",
     "text": "11:45:14PM播Minecraft生存+闲聊杂谈",
     "scroll": false
+  },
+  "starting": {
+    "kicker": "STARTING SOON",
+    "heading": "直播马上开始",
+    "sub": "先倒杯水，我们很快见",
+    "time": ""
+  },
+  "brb": {
+    "kicker": "BE RIGHT BACK",
+    "heading": "稍等一下",
+    "sub": "主播去去就回",
+    "time": ""
+  },
+  "ending": {
+    "kicker": "SEE YOU NEXT TIME",
+    "heading": "今天就到这里啦",
+    "sub": "谢谢大家的陪伴",
+    "time": ""
   }
 }
