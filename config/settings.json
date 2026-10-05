@@ -28,8 +28,7 @@
     }
   },
   "ticker": {
-    "speed": 90,
-    "gap": 160
+    "speed": 90
   },
   "regions": [
     { "id": "title",   "kind": "title",  "label": "顶栏左：节目名", "x": 24,   "y": 24,  "w": 1000, "h": 88 },

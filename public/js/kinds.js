@@ -55,19 +55,18 @@ export const kinds = {
       if (data.label) el.append(h('span', 'ticker-label', data.label));
       const viewport = h('div', 'ticker-viewport');
       const track = h('div', 'ticker-track');
-      const item = () => h('span', 'ticker-item', data.text ?? '');
-      track.append(item());
+      track.append(h('span', 'ticker-item', data.text ?? ''));
       viewport.append(track);
       el.append(viewport);
       if (!data.scroll || !data.text) return;
 
-      const { speed, gap } = settings.ticker;
-      track.append(item());
-      track.style.setProperty('--gap', `${gap}px`);
+      // 从右边进入，完全走出左边后再从右边重新进入
       requestAnimationFrame(() => {
-        const distance = track.firstChild.offsetWidth;
-        track.style.setProperty('--shift', `-${distance}px`);
-        track.style.animationDuration = `${distance / speed}s`;
+        const from = viewport.clientWidth;
+        const to = -track.offsetWidth;
+        track.style.setProperty('--from', `${from}px`);
+        track.style.setProperty('--to', `${to}px`);
+        track.style.animationDuration = `${(from - to) / settings.ticker.speed}s`;
         track.classList.add('scrolling');
       });
     },
