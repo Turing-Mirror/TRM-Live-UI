@@ -12,8 +12,9 @@ export function livePage(ctx) {
     onChange: (id) => ctx.actions.switchScene(id),
   });
   const { width, height } = manifest.canvas;
-  const preview = el('div', { class: 'preview', style: { aspectRatio: `${width} / ${height}` } },
+  const preview = el('div', { class: 'preview' },
     el('iframe', { src: '/overlay?preview=1', title: t('live.preview'), tabIndex: -1 }));
+  preview.style.setProperty('--ratio', `${width} / ${height}`);
   const nudges = el('div');
 
   const root = pagePad(

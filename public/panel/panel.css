@@ -281,8 +281,8 @@ button, select, label[for], input[type="checkbox"] { cursor: pointer; }
   inset: 0;
   overflow-y: auto;
 }
+/* 与 TRM UI 的 PagePad 一致：铺满内容区，只留左右边距，不限最大宽度 */
 .page-pad {
-  max-width: 1120px;
   padding: 0 30px 34px;
 }
 .page-head {
@@ -449,12 +449,15 @@ button, select, label[for], input[type="checkbox"] { cursor: pointer; }
 .nudge-text { font-size: 12.5px; line-height: 1.6; color: var(--help); }
 .nudge-actions { display: flex; gap: 8px; align-items: center; }
 
+/* 预览按画布比例铺满分组的宽度，但高度不超过窗口的六成，宽屏下居中 */
 .preview {
+  --ratio: 16 / 9;
   overflow: hidden;
   border-radius: var(--rs);
   background: var(--preview-bg);
-  aspect-ratio: 16 / 9;
-  margin: 12px 0;
+  aspect-ratio: var(--ratio);
+  width: min(100%, calc(62vh * (var(--ratio))));
+  margin: 12px auto;
 }
 .preview iframe {
   display: block;
