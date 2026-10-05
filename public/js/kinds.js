@@ -19,14 +19,14 @@ export const kinds = {
     render(el, data) {
       if (data.badge) el.append(h('span', 'badge', data.badge));
       el.append(h('span', 'title-main', data.main ?? ''));
-      if (data.sub) el.append(h('span', 'title-dot'), h('span', 'title-sub', data.sub));
+      if (data.sub) el.append(h('span', 'title-sub', data.sub));
     },
   },
 
   status: {
     fields: [{ key: 'text', label: '状态文字' }],
     render(el, data, region) {
-      el.append(h('span', 'status-dot'), h('span', 'status-text', data.text ?? ''));
+      el.append(h('span', 'status-text', data.text ?? ''));
       if (region.options?.clock) {
         const clock = h('span', 'status-clock');
         clock.dataset.clock = '';
@@ -41,9 +41,7 @@ export const kinds = {
       { key: 'body', label: '内容', type: 'textarea' },
     ],
     render(el, data) {
-      const head = h('div', 'notice-head');
-      head.append(h('span', 'notice-mark'), h('span', 'notice-heading', data.heading ?? ''));
-      el.append(head, h('div', 'notice-body', data.body ?? ''));
+      el.append(h('div', 'notice-heading', data.heading ?? ''), h('div', 'notice-body', data.body ?? ''));
     },
   },
 

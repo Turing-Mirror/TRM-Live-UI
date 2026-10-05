@@ -29,23 +29,14 @@ html, body {
 /* 顶栏左 */
 .badge {
   flex: none;
-  padding: 4px 16px;
-  border-radius: 999px;
-  background: var(--color-accent);
-  font-size: var(--size-small);
-  font-weight: 700;
-  letter-spacing: 0.08em;
+  font-size: var(--size-subtitle);
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  color: var(--color-highlight);
 }
 .title-main {
   font-size: var(--size-title);
   font-weight: 700;
-}
-.title-dot {
-  flex: none;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: var(--color-accent);
 }
 .title-sub {
   font-size: var(--size-subtitle);
@@ -55,13 +46,6 @@ html, body {
 }
 
 /* 顶栏右 */
-.status-dot {
-  flex: none;
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  background: var(--color-accent);
-}
 .status-text {
   flex: 1;
   font-size: var(--size-heading);
@@ -83,20 +67,10 @@ html, body {
   padding: 28px 28px;
   white-space: normal;
 }
-.notice-head {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-.notice-mark {
-  width: 12px;
-  height: 28px;
-  border-radius: 6px;
-  background: var(--color-accent);
-}
 .notice-heading {
   font-size: var(--size-heading);
   font-weight: 700;
+  color: var(--color-highlight);
 }
 .notice-body {
   font-size: var(--size-body);
@@ -106,16 +80,11 @@ html, body {
 }
 
 /* 底栏滚动字幕 */
-.region-ticker {
-  padding-left: 16px;
-}
 .ticker-label {
   flex: none;
-  padding: 8px 20px;
-  border-radius: calc(var(--radius) - 6px);
-  background: var(--color-accentSoft);
-  font-size: var(--size-small);
+  font-size: var(--size-body);
   font-weight: 700;
+  color: var(--color-highlight);
 }
 .ticker-viewport {
   flex: 1;
