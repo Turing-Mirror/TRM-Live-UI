@@ -5,14 +5,30 @@ export function subscribe(onState) {
   return source;
 }
 
-export async function saveContent(content) {
-  const res = await fetch('/api/content', {
-    method: 'POST',
+async function request(url, options) {
+  const res = await fetch(url, options);
+  if (!res.ok) throw new Error(await res.text());
+  return res.status === 204 ? null : res.json();
+}
+
+export const saveContent = (content) => request('/api/content', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify(content),
+});
+
+const presetUrl = (name) => `/api/presets/${encodeURIComponent(name)}`;
+
+export const presets = {
+  list: () => request('/api/presets'),
+  load: (name) => request(presetUrl(name)),
+  save: (name, content) => request(presetUrl(name), {
+    method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(content),
-  });
-  if (!res.ok) throw new Error(await res.text());
-}
+  }),
+  remove: (name) => request(presetUrl(name), { method: 'DELETE' }),
+};
 
 // 把 settings.theme 写成 CSS 变量
 export function applyTheme(theme, root = document.documentElement) {

@@ -1,19 +1,19 @@
 {
   "title": {
-    "badge": "LIVE",
+    "badge": "Kara251",
     "main": "图灵镜",
-    "sub": "辅助雅典娜COS视野之灵"
+    "sub": "审美提升中 / Vibe Coding / 视觉设计"
   },
   "status": {
-    "text": "王者荣耀"
+    "text": "Relaxing"
   },
   "notice": {
     "heading": "公告",
-    "body": "不包C不包赢只包恶心\n信誉分收割者\n举报收割者"
+    "body": "可连麦 可提问 可闲聊\n可以问的模型：\nClaude Opus 5.5\nGPT 5.6 Sol\nGemini 3.8 Flash"
   },
   "ticker": {
     "label": "提示",
-    "text": "欢迎来到图灵镜的直播间",
-    "scroll": true
+    "text": "11:45:14PM播Minecraft生存+闲聊杂谈",
+    "scroll": false
   }
 }

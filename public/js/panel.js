@@ -1,4 +1,4 @@
-import { subscribe, saveContent, applyTheme, h } from './live.js';
+import { subscribe, saveContent, presets, applyTheme, h } from './live.js';
 import { kinds } from './kinds.js';
 
 const form = document.getElementById('form');
@@ -68,6 +68,59 @@ async function publish(event) {
     setStatus(`更新失败：${err.message}`);
   }
 }
+
+// 预设
+const presetList = document.getElementById('preset-list');
+const presetName = document.getElementById('preset-name');
+
+async function refreshPresets(selected) {
+  const names = await presets.list();
+  presetList.replaceChildren(...names.map((name) => {
+    const option = h('option', '', name);
+    option.value = name;
+    return option;
+  }));
+  if (!names.length) presetList.append(h('option', '', '还没有预设'));
+  if (selected) presetList.value = selected;
+  presetList.disabled = !names.length;
+}
+
+async function runPreset(action) {
+  try {
+    await action();
+  } catch (err) {
+    setStatus(`预设操作失败：${err.message}`);
+  }
+}
+
+document.getElementById('preset-save').addEventListener('click', () => runPreset(async () => {
+  const name = presetName.value.trim();
+  if (!name) return setStatus('请先填写预设名称');
+  await presets.save(name, collect());
+  await refreshPresets(name);
+  setStatus(`已保存预设“${name}”`);
+}));
+
+document.getElementById('preset-load').addEventListener('click', () => runPreset(async () => {
+  if (presetList.disabled) return;
+  const name = presetList.value;
+  state = { ...state, content: await presets.load(name) };
+  build();
+  dirty = true;
+  presetName.value = name;
+  setStatus(`已载入“${name}”，点击更新到直播后生效`);
+}));
+
+document.getElementById('preset-remove').addEventListener('click', () => runPreset(async () => {
+  if (presetList.disabled) return;
+  const name = presetList.value;
+  if (!confirm(`删除预设“${name}”？`)) return;
+  await presets.remove(name);
+  await refreshPresets();
+  setStatus(`已删除预设“${name}”`);
+}));
+
+refreshPresets();
 
 form.addEventListener('input', () => {
   dirty = true;

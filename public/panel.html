@@ -13,7 +13,21 @@
     <span class="header-status" id="status"></span>
     <button class="button" type="submit" form="form" title="Ctrl + Enter">更新到直播</button>
   </header>
-  <form id="form"></form>
+  <main class="main">
+    <section class="card presets">
+      <h2 class="card-title">预设</h2>
+      <div class="presets-row">
+        <select class="input" id="preset-list"></select>
+        <button class="button button-plain" type="button" id="preset-load">载入</button>
+        <button class="button button-plain" type="button" id="preset-remove">删除</button>
+      </div>
+      <div class="presets-row">
+        <input class="input" type="text" id="preset-name" placeholder="预设名称">
+        <button class="button button-plain" type="button" id="preset-save">保存当前内容</button>
+      </div>
+    </section>
+    <form id="form"></form>
+  </main>
   <script type="module" src="/js/panel.js"></script>
 </body>
 </html>

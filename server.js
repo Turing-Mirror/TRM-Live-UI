@@ -5,6 +5,7 @@ const path = require('path');
 
 const ROOT = __dirname;
 const PUBLIC_DIR = path.join(ROOT, 'public');
+const PRESETS_DIR = path.join(ROOT, 'config', 'presets');
 const FILES = {
   settings: path.join(ROOT, 'config', 'settings.json'),
   content: path.join(ROOT, 'config', 'content.json'),
@@ -50,7 +51,18 @@ function handleEvents(req, res) {
   req.on('close', () => clients.delete(res));
 }
 
-function handleSaveContent(req, res) {
+const writeJson = (file, data) => fs.writeFileSync(file, JSON.stringify(data, null, 2) + '\n', 'utf8');
+
+function sendJson(res, data) {
+  res.writeHead(200, { 'Content-Type': MIME['.json'] }).end(JSON.stringify(data));
+}
+
+function sendError(res, status, message) {
+  res.writeHead(status, { 'Content-Type': 'text/plain; charset=utf-8' }).end(message);
+}
+
+// 读取请求里的 JSON，出错时直接回复
+function withJsonBody(req, res, handler) {
   let body = '';
   req.on('data', (chunk) => {
     body += chunk;
@@ -58,14 +70,59 @@ function handleSaveContent(req, res) {
   });
   req.on('end', () => {
     try {
-      const content = JSON.parse(body);
-      fs.writeFileSync(FILES.content, JSON.stringify(content, null, 2) + '\n', 'utf8');
-      broadcast();
-      res.writeHead(204).end();
+      handler(JSON.parse(body));
     } catch (err) {
-      res.writeHead(400, { 'Content-Type': 'text/plain; charset=utf-8' }).end(err.message);
+      sendError(res, 400, err.message);
     }
   });
+}
+
+function handleSaveContent(req, res) {
+  withJsonBody(req, res, (content) => {
+    writeJson(FILES.content, content);
+    broadcast();
+    res.writeHead(204).end();
+  });
+}
+
+// 预设：config/presets 里每个文件是一份内容
+const INVALID_NAME = /[\\/:*?"<>|]/;
+
+function presetFile(name) {
+  const clean = String(name ?? '').trim();
+  if (!clean || INVALID_NAME.test(clean)) throw new Error('预设名称不能为空，也不能包含 \\ / : * ? " < > |');
+  return path.join(PRESETS_DIR, `${clean}.json`);
+}
+
+function listPresets() {
+  fs.mkdirSync(PRESETS_DIR, { recursive: true });
+  return fs.readdirSync(PRESETS_DIR)
+    .filter((file) => file.endsWith('.json'))
+    .map((file) => file.slice(0, -'.json'.length));
+}
+
+function handlePresets(req, res, name) {
+  try {
+    if (name === undefined) {
+      return req.method === 'GET' ? sendJson(res, listPresets()) : res.writeHead(405).end();
+    }
+    const file = presetFile(name);
+    if (req.method === 'GET') return sendJson(res, readJson(file));
+    if (req.method === 'DELETE') {
+      fs.rmSync(file, { force: true });
+      return res.writeHead(204).end();
+    }
+    if (req.method === 'PUT') {
+      return withJsonBody(req, res, (content) => {
+        fs.mkdirSync(PRESETS_DIR, { recursive: true });
+        writeJson(file, content);
+        res.writeHead(204).end();
+      });
+    }
+    res.writeHead(405).end();
+  } catch (err) {
+    sendError(res, err.code === 'ENOENT' ? 404 : 400, err.message);
+  }
 }
 
 function handleStatic(pathname, res) {
@@ -85,6 +142,10 @@ const server = http.createServer((req, res) => {
   const { pathname } = new URL(req.url, 'http://localhost');
   if (pathname === '/events') return handleEvents(req, res);
   if (pathname === '/api/content' && req.method === 'POST') return handleSaveContent(req, res);
+  if (pathname === '/api/presets') return handlePresets(req, res);
+  if (pathname.startsWith('/api/presets/')) {
+    return handlePresets(req, res, decodeURIComponent(pathname.slice('/api/presets/'.length)));
+  }
   if (req.method === 'GET') return handleStatic(pathname, res);
   res.writeHead(405).end();
 });
