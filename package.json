@@ -2,6 +2,7 @@
   "name": "trm-live-template",
   "version": "1.0.0",
   "private": true,
+  "license": "MIT",
   "description": "图灵镜直播模板",
   "scripts": {
     "start": "node server.js"
